@@ -38,9 +38,13 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<DeviceParaRentDTO>), (int)HttpStatusCode.OK)]
 
-        public async Task<IActionResult> GetAllDevices()
+        public async Task<IActionResult> GetAllDevices(string? Model, double? RentPrice)
         {
             var devices = await _context.Device
+                //filtro2
+                .Where(d => (Model == null || d.Model.NameModel.Contains(Model)) 
+                        && (RentPrice == null || d.PriceForRent==RentPrice))
+                //fitlro1
                 .Select(m => new DeviceParaRentDTO(m.id,m.Name,m.Model.NameModel,m.Brand, m.Year,m.Color,m.PriceForRent))
                 .ToListAsync();
             return Ok(devices);
