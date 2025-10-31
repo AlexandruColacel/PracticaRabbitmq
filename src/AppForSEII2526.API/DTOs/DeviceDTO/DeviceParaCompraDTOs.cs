@@ -1,4 +1,4 @@
-﻿namespace AppForSEII2526.API.DTOs.PurchaseDTO
+﻿namespace AppForSEII2526.API.DTOs.DeviceDTO
 {
     public class DeviceParaCompraDTOs
     {
