@@ -31,7 +31,7 @@ namespace AppForSEII2526.API.Models {
         public double TotalPrice { get; set; }
 
         [Display(Name = "Cantidad dispositivos comprados")]
-    public int Quantity { get; set; }
+        public int Quantity { get; set; }
 
         //TotalPrice y Quantity son bastante obvios.//Relacion N:N con PurchaseItem
 
@@ -46,5 +46,6 @@ namespace AppForSEII2526.API.Models {
     public enum PaymentMethod
     {
         TarjetaCredito, PayPal, Efectivo //Aunque en el flujo básico solo mencionen tarjeta de credito y paypal, considero poco lógico no tener en cuenta el pago con efectivo.
+            //    1       2        3
     }
 }

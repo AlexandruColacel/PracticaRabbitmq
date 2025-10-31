@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using AppForSEII2526.API.DTOs.PurchaseDTO;
+using AppForSEII2526.API.DTOs.DeviceDTO;
 
 
 namespace AppForSEII2526.API.Controllers
@@ -42,7 +42,7 @@ namespace AppForSEII2526.API.Controllers
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<DeviceParaCompraDTOs>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetDeviceDTOs()
+        public async Task<ActionResult> GetDevice()
         {
             var devices = await _context.Device.ToListAsync();
 
@@ -50,10 +50,11 @@ namespace AppForSEII2526.API.Controllers
         }
 
         //Select: CU 1
+
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<DeviceParaCompraDTOs>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult> GetDevicesParaRent(string? nombreFILTRO, string? colorFILTRO)
+        public async Task<ActionResult> GetDevicesParaPurchase(string? nombreFILTRO, string? colorFILTRO)
         {
             var devices = await _context.Device
                 //2.1 El sistema ofrece al cliente la alternativa de filtrar los dispositivos según su nombre y/o color.
@@ -61,13 +62,47 @@ namespace AppForSEII2526.API.Controllers
                             (colorFILTRO == null || d.Color.Contains(colorFILTRO)))
                 .Select(d => new DeviceParaCompraDTOs
                 (
-                    d.id, //CUIDADO CON LOS TIPOS DE LAS VARIABLES, TANTO EN DTO COMO CLASE ORIGINAL DEBEN 
+                    d.id, //CUIDADO CON LOS TIPOS DE LAS VARIABLES, revisar clases si es necesario
                     d.Name,
                     d.Brand,
                     d.Model.NameModel,
                     d.Color,
                     d.PriceForPurchase
                 ))
+                .ToListAsync();
+            return Ok(devices);
+        }
+
+        //SELECT: CU 2
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<DeviceParaRentDTO>), (int)HttpStatusCode.OK)]
+
+        public async Task<IActionResult> GetDevicesParaRent(string? Model, double? RentPrice)
+        {
+            var devices = await _context.Device
+                //filtro2
+                .Where(d => (Model == null || d.Model.NameModel.Contains(Model))
+                        && (RentPrice == null || d.PriceForRent == RentPrice))
+                //fitlro1
+                .Select(m => new DeviceParaRentDTO(m.id, m.Name, m.Model.NameModel, m.Brand, m.Year, m.Color, m.PriceForRent))
+                .ToListAsync();
+            return Ok(devices);
+        }
+
+        //SELECT : CU 3
+
+        [HttpGet]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(IList<DeviceParaReseñasDTO>), (int)HttpStatusCode.OK)]
+
+        public async Task<IActionResult> GetDevicesParaReview(string? marca, int? año)
+        {
+            var devices = await _context.Device
+                .Where(m => (m.Brand.Contains(marca)) || (marca == null))
+                .Where(m => (m.Year == año) || (año == null))
+                .Select(m => new DeviceParaReseñasDTO(m.id, m.Name, m.Brand, m.Color, m.Year, m.Model.NameModel))
                 .ToListAsync();
             return Ok(devices);
         }
