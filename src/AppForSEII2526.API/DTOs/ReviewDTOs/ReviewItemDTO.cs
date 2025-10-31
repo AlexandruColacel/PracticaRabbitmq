@@ -1,6 +1,6 @@
 ﻿using Humanizer.Localisation;
 
-namespace AppForSEII2526.API.DTOs.RentalDTOs
+namespace AppForSEII2526.API.DTOs.ReviewDTOs
 {
     public class ReviewItemDTO
     {

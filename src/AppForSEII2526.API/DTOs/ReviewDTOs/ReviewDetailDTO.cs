@@ -1,6 +1,6 @@
 ﻿using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace AppForSEII2526.API.DTOs.RentalDTOs
+namespace AppForSEII2526.API.DTOs.ReviewDTOs
 {
     public class ReviewDetailDTO : ReviewForCreateDTO
     {
