@@ -49,6 +49,7 @@ namespace AppForSEII2526.API.Controllers
                     (decimal)r.TotalPrice,
                     r.Quantity,
                     r.PurchaseItems.Select(pi => new PurchaseItemDTO(
+                        pi.Device.id,
                         pi.Device.Brand,
                         // NO pasamos la entidad Model, pasamos su nombre (campo escalar)
                         pi.Device.Model.NameModel,

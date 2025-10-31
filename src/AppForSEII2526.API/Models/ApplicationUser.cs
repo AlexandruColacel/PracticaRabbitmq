@@ -8,6 +8,10 @@ namespace AppForSEII2526.API.Models
     //Lo siguiente que voy a hacer 
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+        {
+        }
+
         [Display(Name = "Nombre")]
         public string Name
         {
