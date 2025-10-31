@@ -3,6 +3,7 @@ using AppForSEII2526.API.DTOs.ReviewDTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace AppForSEII2526.API.Controllers
 {
     [Route("api/[controller]")]
@@ -36,15 +37,15 @@ namespace AppForSEII2526.API.Controllers
             }
 
             var review = await _context.Review
-             .Where(r => r.Id == id)
-                 .Include(r => r.RentalItems) //join table ReviewItems
+             .Where(r => r.ReviewId == id)
+                 .Include(r => r.ReviewItems) //join table ReviewItems
                     .ThenInclude(ri => ri.Device) //then join table Device
                         .ThenInclude(Device => Device.Model) //then join table Model
-             .Select(r => new ReviewDetailDTO(r.Id, r.ReviewDate,r.ReviewTitle, r.NombreCliente,r.PaisCliente,
+             .Select(r => new ReviewDetailDTO(r.ReviewId, r.DateOfReview,r.ReviewTitle, r.CustomerId,r.CustomerId,
                     r.ReviewItems
                         .Select(ri => new ReviewItemDTO(ri.Device.id,
-                                ri.Device.name, ri.Device.Model.nameModel,
-                                ri.Device.Year, ri.Comments)).ToList<ReviewItemDTO>()))
+                                ri.Device.Name, ri.Device.Model.NameModel,
+                                ri.Device.Year,ri.Rating, ri.Comments)).ToList<ReviewItemDTO>()))
              .FirstOrDefaultAsync();
             
             if (review == null)
