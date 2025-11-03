@@ -1,4 +1,4 @@
-Ôªø
+cs
 using AppForSEII2526.API.DTOs.RentalDTOs;
 using AppForSEII2526.API.Data;
 using AppForSEII2526.API.Models;
@@ -48,9 +48,9 @@ namespace AppForSEII2526.API.Controllers
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
             // Obtener IDs de dispositivos desde el DTO
-            var deviceIds = rentalForCreate.RentalItems.Select(ri => ri.Id).ToList();
+            var deviceIds = rentalForCreate.RentalItems.Select(ri => ri.DeviceId).ToList();
 
-            // Consultar dispositivos con informaci√≥n de alquileres existentes
+            // Consultar dispositivos con informaciÛn de alquileres existentes
             var devices = await _context.Device
                 .Include(d => d.Model)
                 .Include(d => d.DeviceItems)
@@ -64,7 +64,7 @@ namespace AppForSEII2526.API.Controllers
                     d.Brand,
                     d.QuantityForRent,
                     d.PriceForRent,
-                    // Contar dispositivos ya alquilados en el per√≠odo
+                    // Contar dispositivos ya alquilados en el perÌodo
                     NumberOfRentedDevices = d.DeviceItems.Count(rd =>
                         rd.Rental.RentalDateFrom <= rentalForCreate.RentalDateTo &&
                         rd.Rental.RentalDateTo >= rentalForCreate.RentalDateFrom)
@@ -93,11 +93,11 @@ namespace AppForSEII2526.API.Controllers
             // Validar disponibilidad y crear RentDevice para cada item
             foreach (var item in rentalForCreate.RentalItems)
             {
-                var device = devices.FirstOrDefault(d => d.id == item.Id);
+                var device = devices.FirstOrDefault(d => d.id == item.DeviceId);
 
                 if (device == null)
                 {
-                    ModelState.AddModelError("RentalItems", $"Error! Device with ID '{item.Id}' does not exist");
+                    ModelState.AddModelError("RentalItems", $"Error! Device with ID '{item.DeviceId}' does not exist");
                     continue;
                 }
 
@@ -115,14 +115,14 @@ namespace AppForSEII2526.API.Controllers
                     {
                         DeviceId = device.id,
                         Rental = rental,
-                        RentId = rental.Id, // Se asignar√° autom√°ticamente al guardar
+                        RentalId = rental.Id, // Se asignar· autom·ticamente al guardar
                         Price = device.PriceForRent,
                         Quantity = item.Quantity
                     };
 
                     rental.RentDevices.Add(rentDevice);
 
-                    // Actualizar informaci√≥n completa en el DTO para la respuesta
+                    // Actualizar informaciÛn completa en el DTO para la respuesta
                     item.RentPrice = device.PriceForRent;
                     item.Model = device.ModelName;
                     item.Brand = device.Brand;
@@ -151,7 +151,7 @@ namespace AppForSEII2526.API.Controllers
                 return Conflict("Error: There was an error while saving your rental, please try again later. " + ex.Message);
             }
 
-            // Construir DTO de respuesta seg√∫n el enunciado
+            // Construir DTO de respuesta seg˙n el enunciado
             var rentalDetails = new RentalDetailsDTO(
                 rental.Id,
                 rental.RentalDate.Value,
