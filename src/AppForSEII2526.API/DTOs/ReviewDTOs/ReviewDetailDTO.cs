@@ -2,26 +2,30 @@
 
 namespace AppForSEII2526.API.DTOs.ReviewDTOs
 {
-    public class ReviewDetailDTO : ReviewForCreateDTO
+    public class ReviewDetailDTO 
     {
         //el título de la reseña y la fecha en que se realizó así como de cada dispositivo su nombre, modelo, año, puntuación y el comentario, indicando los datos del cliente (nombre y país)
 
-        public ReviewDetailDTO(int id, DateTime reviewDate, string reviewTitle, string nombreCliente, string paisCliente,IList<ReviewItemDTO> reviewItems)
-            : base( reviewTitle, reviewItems, nombreCliente, paisCliente)
+        public ReviewDetailDTO(int id, DateTime reviewDate, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems)
+            
         {
             Id = id;
-            ReviewDate= reviewDate;
+            ReviewDate = reviewDate;
+            ReviewTitle = reviewTitle;
+            NombreCliente = nombreCliente;
+            PaisCliente = paisCliente;
+            ReviewItems = reviewItems;
         }
 
-        public int Id { get; set;}
+        public string ReviewTitle { get; set; }
+        public string NombreCliente { get; set; }
+        public int PaisCliente { get; set; }
+        public IList<ReviewItemDTO> ReviewItems { get; set; }
+
+        public int Id { get; set; }
         public DateTime ReviewDate { get; set; }
-        public override bool Equals(object? obj)
-        {
-            return obj is ReviewDetailDTO dTO &&
-                   base.Equals(obj) &&
-                   Id == dTO.Id &&
-                   CompareDate(ReviewDate, dTO.ReviewDate);
-        }
+       
 
 
     }
+}

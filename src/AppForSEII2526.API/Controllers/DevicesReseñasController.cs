@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppForSEII2526.API.Controllers
 {
+    //metodo get
+
     [Route("api/[controller]")]
     [ApiController]
     public class DevicesReseñasController : ControllerBase
