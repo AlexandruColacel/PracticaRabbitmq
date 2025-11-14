@@ -2,7 +2,7 @@
 {
     public class PurchaseItemDTO
     {
-        public PurchaseItemDTO() { }
+        public PurchaseItemDTO() { } //constructor vacio debido a Entity Framework
 
         //Constructor que se usará en el PurchaseDetailsDTO
         public PurchaseItemDTO(int id, string brand, string model, string color, decimal unitPrice, int quantity, string description)
@@ -16,6 +16,7 @@
             Description = description;
         }
 
+        //Utilizado en PurchaseForListDTO
         public PurchaseItemDTO(int id, string brand, string model, string color, decimal unitPrice)
         {
             Id = id; 

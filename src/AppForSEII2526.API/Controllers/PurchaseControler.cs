@@ -74,147 +74,150 @@ namespace AppForSEII2526.API.Controllers
             return Ok(purchase);
         }
 
-        //METODO POST (en producción)
+        //METODO POST - CREATE PURCHASE
 
-        //[HttpPost]
-        //[Route("[action]")]
-        //[ProducesResponseType(typeof(PurchaseDetailsDTO), (int)HttpStatusCode.Created)]
-        //[ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        //[ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        //public async Task<ActionResult> CreatePurchase([FromBody] PurchaseForCreateDTO purchaseForCreate)
-        //{
-        //    if (purchaseForCreate == null)
-        //        return BadRequest(new ValidationProblemDetails(ModelState));
+        [HttpPost]
+        [Route("[action]")]
+        [ProducesResponseType(typeof(PurchaseDetailsDTO), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        public async Task<ActionResult> CreatePurchase([FromBody] PurchaseForCreateDTO purchaseForCreate)
+        {
+            if (purchaseForCreate == null)
+            {
+                // BadRequest por DTO nulo
+                ModelState.AddModelError("Purchase", "The purchase data cannot be null.");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
 
-        //    // Validaciones de negocio
-        //    if (purchaseForCreate.PurchaseItems == null || !purchaseForCreate.PurchaseItems.Any())
-        //        ModelState.AddModelError("PurchaseItems", "You must include at least one device to purchase.");
+            // --- 1. Validaciones de Negocio (similar a RentalController) ---
+            // Validar que hay items en el carrito
+            if (purchaseForCreate.PurchaseItems == null || !purchaseForCreate.PurchaseItems.Any())
+                ModelState.AddModelError("PurchaseItems", "You must include at least one device to purchase.");
 
-        //    // Comprobar usuario existe
-        //    var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == purchaseForCreate.CustomerUserName);
-        //    if (user == null)
-        //        ModelState.AddModelError("PurchaseApplicationUser", "UserName is not registered.");
+            // Comprobar que el usuario existe (similar a RentalController)
+            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(au => au.UserName == purchaseForCreate.CustomerUserName);
+            if (user == null)
+                ModelState.AddModelError("CustomerUserName", "UserName is not registered.");
 
-        //    if (ModelState.ErrorCount > 0)
-        //        return BadRequest(new ValidationProblemDetails(ModelState));
+            // Si hay errores de validación iniciales, devolver BadRequest
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
 
-        //    // Obtener ids y cargar dispositivos necesarios
-        //    var deviceIds = purchaseForCreate.PurchaseItems.Select(pi => pi.DeviceId).Distinct().ToList();
+            // --- 2. Obtener y Validar Dispositivos y Stock (lógica adaptada) ---
+            var deviceIds = purchaseForCreate.PurchaseItems.Select(pi => pi.Id).Distinct().ToList();
+            var devices = await _context.Device
+                .Include(d => d.Model)
+                .Where(d => deviceIds.Contains(d.id))
+                .ToListAsync();
 
-        //    var devices = await _context.Device
-        //        .Include(d => d.Model)
-        //        .Where(d => deviceIds.Contains(d.id))
-        //        .ToListAsync();
+            foreach (var itemDto in purchaseForCreate.PurchaseItems)
+            {
+                var device = devices.FirstOrDefault(d => d.id == itemDto.Id);
 
-        //    // Validar existencia y stock
-        //    foreach (var item in purchaseForCreate.PurchaseItems)
-        //    {
-        //        var device = devices.FirstOrDefault(d => d.id == item.DeviceId);
-        //        if (device == null)
-        //        {
-        //            ModelState.AddModelError("PurchaseItems", $"Device with id {item.DeviceId} does not exist.");
-        //            continue;
-        //        }
+                if (device == null)
+                {
+                    ModelState.AddModelError("PurchaseItems", $"Device with id {itemDto.Id} does not exist.");
+                    continue;
+                }
 
-        //        if (device.QuantityForPurchase < item.Quantity)
-        //            ModelState.AddModelError("PurchaseItems", $"Not enough stock for device {device.Brand} {device.Name}. Available {device.QuantityForPurchase}, requested {item.Quantity}.");
-        //    }
+                if (itemDto.Quantity <= 0)
+                {
+                    ModelState.AddModelError("PurchaseItems", $"Quantity for device {device.Brand} {device.Model?.NameModel} must be greater than 0.");
+                }
 
-        //    if (ModelState.ErrorCount > 0)
-        //        return BadRequest(new ValidationProblemDetails(ModelState));
+                // Validación de stock 
+                if (device.QuantityForPurchase < itemDto.Quantity)
+                {
+                    ModelState.AddModelError("PurchaseItems", $"Not enough stock for device '{device.Brand} {device.Model?.NameModel}'. Available: {device.QuantityForPurchase}, requested: {itemDto.Quantity}.");
+                }
+            }
 
-        //    // Begin transaction (para garantizar atomicidad si actualizas stock)
-        //    using var transaction = await _context.Database.BeginTransactionAsync();
+            if (ModelState.ErrorCount > 0)
+                return BadRequest(new ValidationProblemDetails(ModelState));
 
-        //    try
-        //    {
-        //        // Crear entidad Purchase
-        //        var purchase = new Purchase
-        //        {
-        //            CustomerUserName = purchaseForCreate.CustomerUserName,
-        //            CustomerUserSurname = purchaseForCreate.CustomerUserSurname,
-        //            DeliveryAddress = purchaseForCreate.DeliveryAddress,
-        //            PaymentMethod = purchaseForCreate.PaymentMethod,
-        //            PurchaseDate = DateTime.UtcNow,
-        //            TotalPrice = 0.0,
-        //            Quantity = 0,
-        //            ApplicationUser = user,
-        //            PurchaseItems = new List<PurchaseItem>()
-        //        };
+            // --- 3. Iniciar Transacción y Crear Entidades ---
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-        //        double totalPrice = 0.0;
-        //        int totalQuantity = 0;
+            try
+            {
+                var purchase = new Purchase
+                {
+                    CustomerUserName = purchaseForCreate.CustomerUserName,
+                    CustomerUserSurname = purchaseForCreate.CustomerUserSurname,
+                    DeliveryAddress = purchaseForCreate.DeliveryAddress,
+                    PaymentMethod = purchaseForCreate.PaymentMethod,
+                    PurchaseDate = DateTime.UtcNow,
+                    ApplicationUser = user,
+                    PurchaseItems = new List<PurchaseItem>()
+                };
 
-        //        // Mapear DTOs a entidades PurchaseItem
-        //        foreach (var itemDto in purchaseForCreate.PurchaseItems)
-        //        {
-        //            var device = devices.First(d => d.id == itemDto.DeviceId);
+                double totalPrice = 0.0;
+                int totalQuantity = 0;
 
-        //            // Si tu entidad PurchaseItem tiene un constructor especial para POST, puedes usarlo:
-        //            // ejemplo: new PurchaseItem(device.Id, purchase, device.PriceForPurchase, itemDto.Quantity, itemDto.Description)
-        //            // si no, rellenamos propiedades manualmente:
-        //            var purchaseItem = new PurchaseItem
-        //            {
-        //                Device = device,
-        //                Purchase = purchase,
-        //                UnitPrice = device.PriceForPurchase, // precio de la BBDD
-        //                Quantity = itemDto.Quantity,
-        //                Description = itemDto.Description
-        //            };
+                foreach (var itemDto in purchaseForCreate.PurchaseItems)
+                {
+                    var device = devices.First(d => d.id == itemDto.Id);
 
-        //            // añadir PurchaseItem a la compra
-        //            purchase.PurchaseItems.Add(purchaseItem);
+                    var purchaseItem = new PurchaseItem
+                    {
+                        Device = device,
+                        Purchase = purchase,
+                        Price = device.PriceForPurchase,
+                        Quantity = itemDto.Quantity,
+                        Description = itemDto.Description
+                    };
 
-        //            // actualizar stock (si corresponde)
-        //            device.QuantityForPurchase -= itemDto.Quantity;
+                    purchase.PurchaseItems.Add(purchaseItem);
 
-        //            totalPrice += purchaseItem.UnitPrice * purchaseItem.Quantity;
-        //            totalQuantity += purchaseItem.Quantity;
-        //        }
+                    device.QuantityForPurchase -= itemDto.Quantity;
 
-        //        purchase.TotalPrice = totalPrice;
-        //        purchase.Quantity = totalQuantity;
+                    totalPrice += purchaseItem.Price * purchaseItem.Quantity;
+                    totalQuantity += purchaseItem.Quantity;
+                }
 
-        //        _context.Purchase.Add(purchase);
+                purchase.TotalPrice = totalPrice;
+                purchase.Quantity = totalQuantity;
 
-        //        // Guardamos cambios (guardará purchase, purchaseItems y el update de devices)
-        //        await _context.SaveChangesAsync();
+                _context.Purchase.Add(purchase);
 
-        //        // Commit
-        //        await transaction.CommitAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-        //        // Construir DTO de respuesta (PurchaseDetailsDTO)
-        //        var itemsDto = purchase.PurchaseItems.Select(pi => new PurchaseItemDTO(
-        //            pi.Device.Brand,
-        //            pi.Device.Model?.NameModel ?? string.Empty,
-        //            pi.Device.Color,
-        //            (decimal)pi.UnitPrice,   // tu PurchaseItemDTO usa decimal en constructor
-        //            pi.Quantity,
-        //            pi.Description
-        //        )).ToList();
+                var itemsDto = purchase.PurchaseItems.Select(pi => new PurchaseItemDTO(
+                    pi.Device.id,
+                    pi.Device.Brand,
+                    pi.Device.Model?.NameModel ?? string.Empty,
+                    pi.Device.Color,
+                    (decimal)pi.Device.PriceForPurchase,
+                    pi.Quantity,
+                    pi.Description
+                )).ToList();
 
-        //        var purchaseDetail = new PurchaseDetailsDTO(
-        //            purchase.Id,
-        //            purchase.CustomerUserName,
-        //            purchase.CustomerUserSurname,
-        //            purchase.DeliveryAddress,
-        //            purchase.PurchaseDate,
-        //            purchase.TotalPrice,
-        //            purchase.Quantity,
-        //            itemsDto
-        //        );
+                var purchaseDetail = new PurchaseDetailsDTO(
+                    purchase.Id,
+                    purchase.CustomerUserName,
+                    purchase.CustomerUserSurname,
+                    purchase.DeliveryAddress,
+                    purchase.PurchaseDate,
+                    (decimal)purchase.TotalPrice,
+                    purchase.Quantity,
+                    itemsDto
+                );
 
-        //        return CreatedAtAction(nameof(GetPurchase), new { id = purchase.Id }, purchaseDetail);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await transaction.RollbackAsync();
-        //        _logger.LogError(ex, "Error saving purchase");
-        //        ModelState.AddModelError("Purchase", $"Error while saving purchase: {ex.Message}");
-        //        return Conflict("Error while saving purchase");
-        //    }
-        //}
-
+                return CreatedAtAction(nameof(GetPurchase), new { id = purchase.Id }, purchaseDetail);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error saving purchase");
+                ModelState.AddModelError("Purchase", $"Error while saving purchase: {ex.Message}");
+                return Conflict("Error while saving purchase");
+            }
+        }//De createPurchase
 
     } //De public class PurchaseControler
-}//De namespace AppForSEII2526.API.Controllers
+
+
+} //de namespace appforseii2526.api.controllers
+
