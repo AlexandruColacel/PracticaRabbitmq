@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using AppForSEII2526.API.DTOs.ReviewDTOs;
+﻿using AppForSEII2526.API.DTOs.ReviewDTOs;
+using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace AppForSEII2526.API.Controllers
@@ -75,13 +77,18 @@ namespace AppForSEII2526.API.Controllers
             // any validation defined in ReviewForCreate is checked before running the method so they don't have to be checked again
             if (reviewForCreate.ReviewItems.Count == 0)
                 ModelState.AddModelError("ReviewItems", "Error! You must include at least one device to be reviewed");
+            var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == reviewForCreate.CustomerId);
+            if (user == null)
+                ModelState.AddModelError("RentalApplicationUser", "Error! UserName is not registered");
             // Validar pais
             if (!ValoresPermitidos.Contains(reviewForCreate.CustomerCountry))
                 ModelState.AddModelError("CustomerCountry", "Error! The country is not valid. Allowed values are: 1 (Spain), 5 (France), 10 (Germany), 20 (Italy)");
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
-            var deviceIds = reviewForCreate.ReviewItems.Select(ri => ri.DeviceId).ToList();
+
+
+            var deviceIds = reviewForCreate.ReviewItems.Select(ri => ri.DeviceId).ToList<int>();
 
             var devices = _context.Device.Include(m => m.ReviewItems)
                 .ThenInclude(ri => ri.Review)
@@ -95,15 +102,21 @@ namespace AppForSEII2526.API.Controllers
 
                 }).ToList();
 
+            Review review = new Review {
+                DateOfReview = reviewForCreate.DateOfReview, 
+                ReviewTitle = reviewForCreate.ReviewTitle,
+                CustomerId = reviewForCreate.CustomerId, 
+                CustomerCountry = reviewForCreate.CustomerCountry,
+               ReviewItems = new List<ReviewItem>(),
+               ApplicationUser = user
+            };
 
-            Review review = new Review(reviewForCreate.CustomerId,
-                reviewForCreate.ReviewTitle, reviewForCreate.CustomerCountry,
-                reviewForCreate.DateOfReview, reviewForCreate.OverallRating, new List<ReviewItem>(), reviewForCreate.ReviewId);
 
-
+            review.OverallRating = 0;
             foreach (var item in reviewForCreate.ReviewItems)
             {
-                var device = devices.FirstOrDefault(m => m.Model.NameModel == item.ModelName);
+                
+                var device = devices.FirstOrDefault(m => m.id == item.DeviceId);
                 // we must check that the device exists in the database
                 if (device == null)
                 {
@@ -112,10 +125,20 @@ namespace AppForSEII2526.API.Controllers
                 else
                 {
                     // review does not exist in the database yet and does not have a valid Id, so we must relate reviewitem to the object review
-                    review.ReviewItems.Add(new ReviewItem(device.id, review.ReviewId, item.Comments, item.DeviceId, item.Rating, review));
+                    review.ReviewItems.Add(new ReviewItem(item.DeviceId, item.Comments, item.Rating, review));
+                    
                 }
             }
-                _context.Add(review);
+
+            review.OverallRating = review.ReviewItems.Sum(ri => ri.Rating * review.ReviewItems.Count);
+
+
+            if (ModelState.ErrorCount > 0) {
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+
+
+            _context.Add(review);
 
                 try
                 {                     // we store in the database both review and its reviewitems
