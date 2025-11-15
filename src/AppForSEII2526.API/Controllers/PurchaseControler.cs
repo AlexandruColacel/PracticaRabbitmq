@@ -59,7 +59,7 @@ namespace AppForSEII2526.API.Controllers
                         // cantidad: depende de dónde guardes la cantidad por item:
                         // normalmente Quantity viene de PurchaseItem (si existe) o de Device.QuantityForPurchase
                         // aquí supongo que PurchaseItem contiene la cantidad (si no, usar Device.QuantityForPurchase)
-                        pi.Device.QuantityForPurchase, // <-- si PurchaseItem tiene la propiedad Quantity, usa esa en lugar de Device
+                        pi.Quantity, // CANTIDAD DE PURCHASEITEM, no de DEVICE (PUDE SOLUCIONAR EL PROBLEMA DE LAS PRUEBAS SIIIIIIIII)
                         pi.Device.Description ?? string.Empty
                     )).ToList()
                 ))
