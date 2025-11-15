@@ -5,20 +5,20 @@ namespace AppForSEII2526.API.Models
 
     public class Review
     {
+        public Review() { }
 
         //reviewForCreate.CustomerId,reviewForCreate.ReviewTitle, reviewForCreate.CustomerCountry,reviewForCreate.DateOfReview, reviewForCreate.OverallRating, new List<ReviewItem>(), reviewForCreate.ReviewId
-        public Review(string customerId, string reviewTitle, int customerCountry, DateTime dateOfReview, int overallRating, IList<ReviewItem> reviewItem, int  reviewId)
+        public Review(string customerId, string reviewTitle, int customerCountry, DateTime dateOfReview, IList<ReviewItem> reviewItems, int  reviewId)
         {
             CustomerId = customerId;
             ReviewTitle = reviewTitle;
             CustomerCountry = customerCountry;
             DateOfReview = dateOfReview;
-            OverallRating = overallRating;
-            ReviewItems = reviewItem;
+            OverallRating = ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count); ;
+            ReviewItems = reviewItems;
             ReviewId = reviewId;
 
         }
-
 
 
 
