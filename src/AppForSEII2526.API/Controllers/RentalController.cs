@@ -167,17 +167,17 @@ namespace AppForSEII2526.API.Controllers
 
             return CreatedAtAction(nameof(GetRental), new { id = rental.Id }, rentalDetails);
         }
-
+        //METODO POST
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(RentalDetailsDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetRental(int id)
         {
-            var rental = await _context.Rental
-                .Include(r => r.RentDevices)
-                    .ThenInclude(rd => rd.Device)
-                        .ThenInclude(d => d.Model)
-                .Include(r => r.ApplicationUser)
+            var rental = await _context.Rental //pillo el rental para mostrar los datos que me dicta el CU
+                .Include(r => r.RentDevices)  //incluye los rent device que hayan con el id del metodo  
+                    .ThenInclude(rd => rd.Device)//para cada alquiler incluye tambien el dispositivos alquiladp
+                        .ThenInclude(d => d.Model)//para cada alquiler incluye tambien el modelo
+                .Include(r => r.ApplicationUser) //incluye el usuario(AplicationUsser)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (rental == null)
