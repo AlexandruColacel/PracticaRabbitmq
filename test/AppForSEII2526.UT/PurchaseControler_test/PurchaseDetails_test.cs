@@ -140,7 +140,22 @@ namespace AppForSEII2526.UT.PurchaseControler_test
             Assert.Equal(_expectedDto, actualDto);
         }
 
+        // --- Test 2: Caso de Error (NotFound 404) ---
+        // Probamos que al pedir una ID que NO existe, devuelve 'NotFound'
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task GetPurchase_NotFound_test()
+        {
+            // Arrange
+            var controller = new PurchaseControler(_context, _logger);
 
+            // Act
+            var result = await controller.GetPurchase(_purchaseId_NotFound);
+
+            // Assert
+            // Comprobamos que el resultado es 'NotFoundResult' (HTTP 404)
+            Assert.IsType<NotFoundResult>(result);
+        }
 
     }//De la clase PurchaseDetails_test
 
