@@ -5,35 +5,38 @@
         public ReviewForCreateDTO()
         {
         }
-
-        public ReviewForCreateDTO(string customerId, string reviewTitle, List<ReviewItemDTO> reviewItems, int customerCountry, DateTime dateOfReview, int overallRating, int reviewId)
+        
+        public ReviewForCreateDTO(DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems)
         {
-            CustomerId = customerId;
+            DateOfReview=dateOfReview;
             ReviewTitle = reviewTitle;
+            CustomerId = nombreCliente;
+            CustomerCountry = paisCliente;
             ReviewItems = reviewItems;
-            CustomerCountry = customerCountry;
-            DateOfReview = dateOfReview;
-            OverallRating = overallRating;
-            ReviewId = reviewId;
 
 
         }
 
-        public string CustomerId { get; set; }
+        public DateTime DateOfReview { get; set; }
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "Please, enter a Title for the Review")]
         public string ReviewTitle { get; set; }
-        
-        public List<ReviewItemDTO> ReviewItems { get; set; }
+
+        public string CustomerId { get; set; }
 
         [Required(ErrorMessage = "Please, enter a Country for the Customer")]
         public int CustomerCountry { get; set; }
-        
-        public DateTime DateOfReview { get; set; }
-        
-        public int OverallRating { get; set; }
-        
-        public int ReviewId { get; set; }
+
+        public IList<ReviewItemDTO> ReviewItems { get; set; }
+        public int OverallRating{
+            get {
+                return ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count);
+            }
+        }
+
+
+
+
 
 
 
