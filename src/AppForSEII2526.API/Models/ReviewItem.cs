@@ -4,7 +4,24 @@ namespace AppForSEII2526.API.Models
 {
     [PrimaryKey(nameof(DeviceId), nameof(ReviewId))]
     public class ReviewItem
-    {
+    {   
+        public ReviewItem() { }
+        public ReviewItem(int deviceId, int reviewId, string comments, int id, int rating, Review review)
+        {
+            DeviceId = deviceId;
+            ReviewId = reviewId;
+            Comments = comments;
+            Id = id;
+            Rating = rating;
+            Review = review;
+        }
+        public ReviewItem(int deviceId, string comments, int rating, Review review)
+        {
+            DeviceId = deviceId;
+            Comments = comments;
+            Rating = rating;
+            Review = review;
+        }
 
 
         public int DeviceId { get; set; }//Identificador del dispositivo al que se le hace el review

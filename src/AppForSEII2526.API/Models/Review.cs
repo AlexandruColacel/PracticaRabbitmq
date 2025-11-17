@@ -5,7 +5,24 @@ namespace AppForSEII2526.API.Models
 
     public class Review
     {
-        [Required(AllowEmptyStrings = false, ErrorMessage = "El pasi es un campo obligatorio")]
+        public Review() { }
+
+        //reviewForCreate.CustomerId,reviewForCreate.ReviewTitle, reviewForCreate.CustomerCountry,reviewForCreate.DateOfReview, reviewForCreate.OverallRating, new List<ReviewItem>(), reviewForCreate.ReviewId
+        public Review(string customerId, string reviewTitle, int customerCountry, DateTime dateOfReview, IList<ReviewItem> reviewItems, int  reviewId)
+        {
+            CustomerId = customerId;
+            ReviewTitle = reviewTitle;
+            CustomerCountry = customerCountry;
+            DateOfReview = dateOfReview;
+            OverallRating = ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count); ;
+            ReviewItems = reviewItems;
+            ReviewId = reviewId;
+
+        }
+
+
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "El pais es un campo obligatorio")]
         public int CustomerCountry { get; set; }//Pais del cliente que hace la review, lo pongo como int para hacer una enumeracion
 
 
