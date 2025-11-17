@@ -6,6 +6,17 @@ namespace AppForSEII2526.API.Models
 
     public class Model
     {
+        public Model() { 
+        }
+        public Model(String Name) {
+            Name = Name;
+        }
+
+
+
+
+
+
         [Key]
         public int Id { get; set; }//Identificador único del modelo
 

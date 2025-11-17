@@ -5,6 +5,28 @@ namespace AppForSEII2526.API.Models
 
     public class Device //voy a crear la clase Device 
     {
+        //constructores
+        public Device() {
+
+        }
+
+        public Device(string color, string brand, string name, double priceForRent, double priceForPurchase, QualityType quality, int year, int quantityForPurchase, int quantityForRent, IList<ReviewItem> reviewItems, Model model, string? description, IList<PurchaseItem> purchaseItems, IList<RentDevice> deviceItems) {
+            Color = color;
+            Brand = brand;
+            Name = name;
+            PriceForRent = priceForRent;
+            PriceForPurchase = priceForPurchase;
+            Quality = quality;
+            Year = year;
+            QuantityForPurchase = quantityForPurchase;
+            QuantityForRent = quantityForRent;
+            ReviewItems = reviewItems;
+            Model = model;
+            Description = description;
+            PurchaseItems = purchaseItems;
+            DeviceItems = deviceItems;
+        }
+
         [Key]
         public int id { get; set; } //identificador unico del dispositivo
 
