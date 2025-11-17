@@ -215,6 +215,9 @@ namespace AppForSEII2526.API.Controllers
                 ModelState.AddModelError("Purchase", $"Error while saving purchase: {ex.Message}");
                 return Conflict("Error while saving purchase");
             }
-        }
+        }//De createPurchase
     } //De public class PurchaseControler
-}//De namespace AppForSEII2526.API.Controllers
+
+
+} //de namespace appforseii2526.api.controllers
+
