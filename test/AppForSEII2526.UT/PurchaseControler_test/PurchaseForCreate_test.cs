@@ -151,9 +151,84 @@ namespace AppForSEII2526.UT.PurchaseControler_test
             var errorActual = problemDetails.Errors.First().Value[0];
 
             Assert.Contains(errorExpected, errorActual); // Usamos Contains para ser flexibles con el formato exacto
-        }
+        }//De pruebas caso error
 
 
+        // --- MÉTODO DE PRUEBA PARA CREATE PURCHASE EXITOSO ---
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        public async Task CreatePurchase_Success_test()
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<PurchaseControler>>();
+            var controller = new PurchaseControler(_context, mockLogger.Object);
+
+            int quantityToBuy = 2;
+
+            // DTO de entrada
+            var purchaseForCreate = new PurchaseForCreateDTO(
+                _userName,
+                _userSurname,
+                _deliveryAddress,
+                PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO>
+                {
+                    new PurchaseItemDTO
+                    {
+                        Id = _device1Id,
+                        Quantity = quantityToBuy,
+                        Description = "Compra exitosa"
+                    }
+                }
+            );
+
+            // Construimos el DTO que ESPERAMOS recibir como respuesta.
+            // Nota: El ID de la compra será 1 porque es la primera que se crea en este contexto de prueba.
+            // Nota 2: El precio total se calcula: 499.99 * 2 = 999.98
+            var expectedItemDto = new PurchaseItemDTO(
+                _device1Id,
+                "TechBrand",
+                "SuperModelo",
+                "Black",
+                499.99m, // Precio unitario (decimal)
+                quantityToBuy,
+                "Compra exitosa"
+            );
+
+            var expectedPurchaseDetails = new PurchaseDetailsDTO(
+                1, // ID esperado (primera inserción en la tabla Purchase)
+                _userName,
+                _userSurname,
+                _deliveryAddress,
+                DateTime.UtcNow, // Fecha aproximada, se validará con tolerancia en Equals
+                999.98m, // Total Price
+                quantityToBuy, // Total Quantity
+                new List<PurchaseItemDTO> { expectedItemDto }
+            );
+
+            // Act
+            var result = await controller.CreatePurchase(purchaseForCreate);
+
+            // Assert
+            // 1. Verificar CreatedAtActionResult (201)
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+
+            // 2. Verificar que retorna PurchaseDetailsDTO
+            var actualDto = Assert.IsType<PurchaseDetailsDTO>(createdResult.Value);
+
+            // 3. Comparación
+            // Dado que implementaste Equals() en PurchaseDetailsDTO y PurchaseItemDTO (aunque comentaste partes),
+            // Assert.Equal usará tu implementación de Equals.
+            // Asegúrate de que tu Equals permite la tolerancia de fecha y compara las listas correctamente.
+
+            Assert.Equal(expectedPurchaseDetails, actualDto);
+
+            // 4. Verificación adicional del estado de la BBDD (Opcional pero recomendado)
+            //var deviceInDb = await _context.Device.FindAsync(_device1Id);
+            //Assert.Equal(8, deviceInDb.QuantityForPurchase); // 10 iniciales - 2 comprados = 8
+
+        }//De caso éxito
 
     }//De la clase
 
