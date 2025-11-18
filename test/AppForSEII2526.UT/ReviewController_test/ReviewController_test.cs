@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace AppForSEII2526.UT.ReviewController_test {
     public class ReviewController_test : AppForSEII25264SqliteUT {
@@ -44,6 +45,7 @@ namespace AppForSEII2526.UT.ReviewController_test {
             };
 
 
+
             var testReview = new Review {
                 CustomerId = testUser.UserName,
                 ReviewTitle = "Great Product",
@@ -56,28 +58,18 @@ namespace AppForSEII2526.UT.ReviewController_test {
                         Comments = "Loved it!"
                     }
                 },
-                ReviewId = _reviewId_OK,
+                ReviewId = 100,
+                ApplicationUser = testUser
             };
 
 
             
-            var testReviewItem = new ReviewItem {
-                DeviceId = testDevice.id,
-                ReviewId = testReview.ReviewId,
-                Comments = "Loved it!",
-                Id = 1,
-                Rating = 5,
-                Review = testReview,
-
-            };
-
-            testReview.ReviewItems.Add(testReviewItem);
+           
 
             _context.Add(testUser);
             _context.Add(testModel);
             _context.Add(testDevice);
             _context.Add(testReview);
-            _context.Add(testReviewItem);
             _context.SaveChanges();
 
 
@@ -114,21 +106,24 @@ namespace AppForSEII2526.UT.ReviewController_test {
             ILogger<ReviewController> logger = mock.Object;
             var controller = new ReviewController(_context, logger);
 
-            var expectedReview = new ReviewDetailDTO(100,DateTime.Now, "Great Product", "John",1, new List<ReviewItemDTO>());
+            var expectedReview = new ReviewDetailDTO(100,DateTime.Now, "Great Product", "testuser@example.com", 1, new List<ReviewItemDTO>());
             //int deviceId, string deviceName,  string modelName, int deviceYear,int rating, string comments
             expectedReview.ReviewItems.Add(new ReviewItemDTO(20, "SupaMegaAmazingPhone", "SuperModelo",2023,5, "Loved it!"));
 
 
             // Act 
-            var result = await controller.GetReview(1);
+            var result = await controller.GetReview(100);
 
             //Assert
             //we check that the response type is OK and obtain the rental
             var okResult = Assert.IsType<OkObjectResult>(result);
             var rentalDTOActual = Assert.IsType<ReviewDetailDTO>(okResult.Value);
-            var eq = expectedReview.Equals(rentalDTOActual);
-            //we check that the expected and actual are the same
-            Assert.Equal(expectedReview, rentalDTOActual);
+            rentalDTOActual.Should().BeEquivalentTo(expectedReview, options =>
+                options
+            // Para cualquier propiedad DateTime encontrada en el objeto...
+            .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
+            .WhenTypeIs<DateTime>()
+    );
 
 
 
