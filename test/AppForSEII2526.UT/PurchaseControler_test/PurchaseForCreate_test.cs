@@ -121,7 +121,39 @@ namespace AppForSEII2526.UT.PurchaseControler_test
                 new object[] { purchaseQuantityZero, "Quantity for device TechBrand SuperModelo must be greater than 0." }, // Asumiendo que el mensaje incluye marca/modelo
                 new object[] { purchaseOutOfStock, "Not enough stock for device 'OldBrand SuperModelo'" }
             };
+
+        }//De la lista de casos de prueba
+
+        // --- MÉTODO DE PRUEBA PARA ERRORES EN CREATE PURCHASE ---
+        [Theory]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        [MemberData(nameof(TestCasesFor_CreatePurchase_Error))]
+        public async Task CreatePurchase_Error_test(PurchaseForCreateDTO purchaseDTO, string errorExpected)
+        {
+            // Arrange
+            var mockLogger = new Mock<ILogger<PurchaseControler>>();
+            var controller = new PurchaseControler(_context, mockLogger.Object);
+
+            // Act
+            var result = await controller.CreatePurchase(purchaseDTO);
+
+            // Assert
+            // 1. Verificamos que devuelve BadRequest
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+
+            // 2. Verificamos que devuelve ValidationProblemDetails
+            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
+
+            // 3. Buscamos el primer error y comparamos el mensaje
+            // Nota: problemDetails.Errors es un Diccionario <string, string[]>. 
+            // First().Value[0] obtiene el primer mensaje del primer error encontrado.
+            var errorActual = problemDetails.Errors.First().Value[0];
+
+            Assert.Contains(errorExpected, errorActual); // Usamos Contains para ser flexibles con el formato exacto
         }
+
+
 
     }//De la clase
 
