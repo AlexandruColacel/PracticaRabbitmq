@@ -1,9 +1,12 @@
 ﻿using AppForSEII2526.API.DTOs.DeviceDTO;
 using AppForSEII2526.API.DTOs.PurchaseDTO;
+using AppForSEII2526.API.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Security.Policy;
 
 namespace AppForSEII2526.API.Controllers
 {
@@ -38,7 +41,6 @@ namespace AppForSEII2526.API.Controllers
                 .Where(r => r.Id == id)
                 .Include(r => r.PurchaseItems)
                     .ThenInclude(pi => pi.Device)
-                        .ThenInclude(d => d.Model)
                 .Select(r => new PurchaseDetailsDTO(
                     r.Id,
                     r.CustomerUserName,
@@ -56,11 +58,10 @@ namespace AppForSEII2526.API.Controllers
                         pi.Device.Color,
                         // precio desde Device
                         (decimal)pi.Device.PriceForPurchase,
-                        // cantidad: depende de dónde guardes la cantidad por item:
-                        // normalmente Quantity viene de PurchaseItem (si existe) o de Device.QuantityForPurchase
-                        // aquí supongo que PurchaseItem contiene la cantidad (si no, usar Device.QuantityForPurchase)
-                        pi.Quantity, // CANTIDAD DE PURCHASEITEM, no de DEVICE (PUDE SOLUCIONAR EL PROBLEMA DE LAS PRUEBAS SIIIIIIIII)
-                        pi.Device.Description ?? string.Empty
+                        // cantidad: la cantidad específica de este item (PurchaseItem.Quantity)
+                        pi.Quantity,
+                        // descripción del item (explicación del cliente)
+                        pi.Description ?? string.Empty
                     )).ToList()
                 ))
                 .FirstOrDefaultAsync();
@@ -215,7 +216,6 @@ namespace AppForSEII2526.API.Controllers
                 return Conflict("Error while saving purchase");
             }
         }//De createPurchase
-
     } //De public class PurchaseControler
 
 

@@ -11,12 +11,11 @@
             PurchaseItems = purchaseItems;
         }
 
-        [EmailAddress]
-        [Required]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your Surname")]
         public string CustomerUserName { get; set; }
 
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your Name and Surname")]
-        [StringLength(50, MinimumLength = 10, ErrorMessage = "Name and Surname must have at least 10 characters")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please, set your Surname")]
+        [StringLength(50, MinimumLength = 4, ErrorMessage = "Name and Surname must have at least 10 characters")]
         public string CustomerUserSurname { get; set; }
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.MultilineText)]
