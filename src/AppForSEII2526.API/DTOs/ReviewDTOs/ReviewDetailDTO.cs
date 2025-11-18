@@ -1,4 +1,5 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using AppForSEII2526.API.DTOs.RentalDTOs;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AppForSEII2526.API.DTOs.ReviewDTOs
 {
@@ -24,8 +25,20 @@ namespace AppForSEII2526.API.DTOs.ReviewDTOs
 
         public int Id { get; set; }
         public DateTime DateOfReview { get; set; }
-       
 
+        protected bool CompareDate(DateTime date1, DateTime date2) {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
+        public override bool Equals(object? obj) {
+            return obj is ReviewDetailDTO dTO &&
+                   Id == dTO.Id &&
+                   CompareDate(DateOfReview, dTO.DateOfReview)&&
+                   ReviewTitle == dTO.ReviewTitle &&
+                   NombreCliente == dTO.NombreCliente &&
+                   PaisCliente == dTO.PaisCliente &&
+                   ReviewItems.SequenceEqual(dTO.ReviewItems);
+
+        }
 
     }
 }

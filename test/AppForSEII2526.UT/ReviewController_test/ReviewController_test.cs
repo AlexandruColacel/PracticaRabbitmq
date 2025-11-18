@@ -117,14 +117,10 @@ namespace AppForSEII2526.UT.ReviewController_test {
             //Assert
             //we check that the response type is OK and obtain the rental
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var rentalDTOActual = Assert.IsType<ReviewDetailDTO>(okResult.Value);
-            rentalDTOActual.Should().BeEquivalentTo(expectedReview, options =>
-                options
-            // Para cualquier propiedad DateTime encontrada en el objeto...
-            .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(1)))
-            .WhenTypeIs<DateTime>()
-    );
-
+            var reviewDTOActual = Assert.IsType<ReviewDetailDTO>(okResult.Value);
+            var eq = expectedReview.Equals(reviewDTOActual);
+            //we check that the expected and actual are the same
+            Assert.Equal(expectedReview, reviewDTOActual);
 
 
 
