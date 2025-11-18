@@ -78,6 +78,50 @@ namespace AppForSEII2526.UT.PurchaseControler_test
         }// Del constructor
 
         //Tras el constructor, van los métodos de prueba, pero en este caso, es mejor primero declarar casos del prueba para errores comunes
+        // --- CASOS DE PRUEBA PARA ERRORES (BadRequest) ---
+
+        public static IEnumerable<object[]> TestCasesFor_CreatePurchase_Error()
+        {
+            // 1. Lista de items nula o vacía
+            var purchaseNoItems = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO>() // Lista vacía
+            );
+
+            // 2. Usuario no registrado
+            var purchaseUserNotRegistered = new PurchaseForCreateDTO(
+                "fakeuser@example.com", _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device1Id, Quantity = 1 } }
+            );
+
+            // 3. Dispositivo no existe
+            var purchaseDeviceNotExist = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = 999, Quantity = 1 } } // ID 999 no existe
+            );
+
+            // 4. Cantidad <= 0
+            var purchaseQuantityZero = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device1Id, Quantity = 0 } }
+            );
+
+            // 5. Sin stock suficiente
+            var purchaseOutOfStock = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device2Id, Quantity = 1 } } // device2 tiene stock 0
+            );
+
+            // Retornamos: [DTO de entrada, Mensaje de error esperado (o parte de él)]
+            return new List<object[]>
+            {
+                new object[] { purchaseNoItems, "You must include at least one device to purchase." },
+                new object[] { purchaseUserNotRegistered, "UserName is not registered." },
+                new object[] { purchaseDeviceNotExist, "Device with id 999 does not exist." },
+                new object[] { purchaseQuantityZero, "Quantity for device TechBrand SuperModelo must be greater than 0." }, // Asumiendo que el mensaje incluye marca/modelo
+                new object[] { purchaseOutOfStock, "Not enough stock for device 'OldBrand SuperModelo'" }
+            };
+        }
 
     }//De la clase
 
