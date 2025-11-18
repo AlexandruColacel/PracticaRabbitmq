@@ -1,4 +1,5 @@
 ﻿using AppForSEII2526.API.Controllers;
+using AppForSEII2526.API.DTOs.RentalDTOs;
 using Humanizer.Localisation;
 using System;
 using System.Collections.Generic;
@@ -106,6 +107,49 @@ namespace AppForSEII2526.UT.RentalController_test {
             //Assert
             //we check that the response type is OK and obtain the list of movies
             Assert.IsType<NotFoundResult>(result);
+
+        }
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        public async Task GetRental_Found_test() {
+            // Arrange
+            var mock = new Mock<ILogger<RentalController>>();
+            ILogger<RentalController> logger = mock.Object;
+            var controller = new RentalController(_context, logger);
+
+
+            var expectedRental = new RentalDetailsDTO(
+                     id: 1,
+                     rentalDate: DateTime.Now,
+                     customerUserName: "LexG@uclm.es",
+                     customerNameSurname: "Lex G",
+                     deliveryAddress: "Avda. España s/n, Albacete 02071",
+                     paymentMethod: PaymentMethodTypes.Tarjeta,
+                     rentalDateFrom: DateTime.Today.AddDays(2),
+                     rentalDateTo: DateTime.Today.AddDays(5),
+                     rentalItems: new List<RentalItemDTO>
+                     {
+                        new RentalItemDTO(
+                            id: 1,
+                            model: "Iphone-3x",
+                            brand: "Apple",
+                            rentPrice: 50.0,
+                            quantity: 1
+                        )
+                     },
+                     totalPrice: 150.0 // 50.0 * 1 * 3 días
+                 );
+            // Act 
+            var result = await controller.GetRental(1);
+
+            //Assert
+            //we check that the response type is OK and obtain the rental
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var rentalDTOActual = Assert.IsType<RentalDetailsDTO>(okResult.Value);
+            var eq = expectedRental.Equals(rentalDTOActual);
+            //we check that the expected and actual are the same
+            Assert.Equal(expectedRental, rentalDTOActual);
 
         }
 

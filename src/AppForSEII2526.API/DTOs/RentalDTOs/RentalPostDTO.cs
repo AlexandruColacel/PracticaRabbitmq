@@ -1,6 +1,6 @@
 ﻿namespace AppForSEII2526.API.DTOs.RentalDTOs
 {
-    public class RentalPostDTO
+    public class RentalPostDTO 
     {
         public RentalPostDTO(string customerUserName, string customerNameSurname, string deliveryAddress, PaymentMethodTypes paymentMethod, DateTime rentalDateFrom, DateTime rentalDateTo, IList<RentalItemDTO> rentalItems)
         {
@@ -39,9 +39,24 @@
         [Required]
         public PaymentMethodTypes PaymentMethod { get; set; }
 
-      
+        //equals compare-date y gethash
+        protected bool CompareDate(DateTime date1, DateTime date2) {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
 
-   
+        public override bool Equals(object? obj) {
+            return obj is RentalPostDTO dTO &&
+                   CompareDate(RentalDateFrom, dTO.RentalDateFrom) &&
+                   CompareDate(RentalDateTo, dTO.RentalDateTo) &&
+                   DeliveryAddress == dTO.DeliveryAddress &&
+                   CustomerUserName == dTO.CustomerUserName &&
+                   CustomerNameSurname == dTO.CustomerNameSurname &&
+                   RentalItems.SequenceEqual(dTO.RentalItems) &&
+                   PaymentMethod == dTO.PaymentMethod;
+        }
+
+
+
 
 
 
