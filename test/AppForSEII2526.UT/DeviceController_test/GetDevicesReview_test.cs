@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace AppForSEII2526.UT.DeviceController_test {
-    public class GetDevices_test : AppForSEII25264SqliteUT {
-        public GetDevices_test() {
+    public class GetDevicesReview_test : AppForSEII25264SqliteUT {
+        public GetDevicesReview_test() {
 
             var testmodel1 =
                 new Model {
