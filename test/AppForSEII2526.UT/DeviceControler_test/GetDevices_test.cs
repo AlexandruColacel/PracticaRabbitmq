@@ -65,6 +65,63 @@ namespace AppForSEII2526.UT.DeviceControler_test
             _context.SaveChanges();
         }//De constructor
 
+        //Antes de pasar a las pruebas, como es costumbre, vamos a definir casos de prueba (MemberData)
+
+        // --- DEFINICIÓN DE CASOS DE PRUEBA (MemberData) ---
+
+        public static IEnumerable<object[]> TestCasesFor_GetDevicesParaPurchase()
+        {
+            // Recreamos los DTOs esperados basados en los datos del seed
+            var dto1 = new DeviceParaCompraDTOs(1, "iPhone 13", "Apple", "Pro Max", "Negro", 800);
+            var dto2 = new DeviceParaCompraDTOs(2, "iPhone 14", "Apple", "Pro Max", "Blanco", 900);
+            var dto3 = new DeviceParaCompraDTOs(3, "Samsung Galaxy", "Samsung", "Pro Max", "Negro", 750);
+
+            return new List<object[]>
+            {
+                // Caso 1: Sin filtros (null, null) -> Debe devolver TODOS (1, 2 y 3)
+                new object[]
+                {
+                    null, // nombreFILTRO
+                    null, // colorFILTRO
+                    new List<DeviceParaCompraDTOs> { dto1, dto2, dto3 } // Esperado
+                },
+
+                // Caso 2: Filtro por Nombre "iPhone" -> Debe devolver 1 y 2
+                new object[]
+                {
+                    "iPhone",
+                    null,
+                    new List<DeviceParaCompraDTOs> { dto1, dto2 }
+                },
+
+                // Caso 3: Filtro por Color "Negro" -> Debe devolver 1 y 3
+                new object[]
+                {
+                    null,
+                    "Negro",
+                    new List<DeviceParaCompraDTOs> { dto1, dto3 }
+                },
+
+                // Caso 4: Filtro combinado (Nombre "Samsung" Y Color "Negro") -> Debe devolver 3
+                new object[]
+                {
+                    "Samsung",
+                    "Negro",
+                    new List<DeviceParaCompraDTOs> { dto3 }
+                },
+
+                // Caso 5: Filtro sin coincidencias -> Lista vacía
+                new object[]
+                {
+                    "Xiaomi",
+                    "Rojo",
+                    new List<DeviceParaCompraDTOs>()
+                }
+            };
+        }// De la lista de casos de prueba
+
+
+
     }//De la clase
 
 }//Del namespace
