@@ -9,6 +9,9 @@
             DeliveryAddress = deliveryAddress ?? throw new ArgumentNullException(nameof(deliveryAddress));
             PaymentMethod = paymentMethod;
             RentalItems = rentalItems ?? throw new ArgumentNullException(nameof(rentalItems));
+
+            RentalDateFrom = rentalDateFrom;
+            RentalDateTo = rentalDateTo;
         }
 
         public RentalPostDTO()
