@@ -28,6 +28,8 @@
         public int CustomerCountry { get; set; }
 
         public IList<ReviewItemDTO> ReviewItems { get; set; }
+
+
         public int OverallRating{
             get {
                 return ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count);
@@ -36,10 +38,22 @@
 
 
 
+        protected bool CompareDate(DateTime date1, DateTime date2) {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
+
+        public override bool Equals(object? obj) {
+            return obj is ReviewForCreateDTO dTO &&
+                   CompareDate(DateOfReview, dTO.DateOfReview) &&
+                   ReviewTitle == dTO.ReviewTitle &&
+                   CustomerId == dTO.CustomerId &&
+                   CustomerCountry == dTO.CustomerCountry &&
+                   ReviewItems.SequenceEqual(dTO.ReviewItems);
+
+        }
 
 
-
-
+        
 
     }
 }

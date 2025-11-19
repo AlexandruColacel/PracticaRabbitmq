@@ -8,7 +8,7 @@ namespace AppForSEII2526.API.Models
         public Review() { }
 
         //reviewForCreate.CustomerId,reviewForCreate.ReviewTitle, reviewForCreate.CustomerCountry,reviewForCreate.DateOfReview, reviewForCreate.OverallRating, new List<ReviewItem>(), reviewForCreate.ReviewId
-        public Review(string customerId, string reviewTitle, int customerCountry, DateTime dateOfReview, IList<ReviewItem> reviewItems, int  reviewId)
+        public Review(string customerId, string reviewTitle, int customerCountry, DateTime dateOfReview, IList<ReviewItem> reviewItems, int  reviewId, ApplicationUser user)
         {
             CustomerId = customerId;
             ReviewTitle = reviewTitle;
@@ -17,6 +17,7 @@ namespace AppForSEII2526.API.Models
             OverallRating = ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count); ;
             ReviewItems = reviewItems;
             ReviewId = reviewId;
+            ApplicationUser = user;
 
         }
 
