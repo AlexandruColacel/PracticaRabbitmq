@@ -97,11 +97,17 @@ namespace AppForSEII2526.API.Controllers
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<DeviceParaReseñasDTO>), (int)HttpStatusCode.OK)]
 
-        public async Task<IActionResult> GetDevicesParaReview(string? marca, int? año)
+        public async Task<IActionResult> GetDevicesParaReview(string? Brand, int? Year)
         {
+            if (Year < 2000) {
+                ModelState.AddModelError("Year", "Error:Year cannot be under 2000");
+                _logger.LogError("Error:Year cannot be under 2000");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+            
             var devices = await _context.Device
-                .Where(m => (m.Brand.Contains(marca)) || (marca == null))
-                .Where(m => (m.Year == año) || (año == null))
+                .Where(m => (Brand == null || m.Brand.Contains(Brand)) &&
+                            (Year == null || m.Year == Year))
                 .Select(m => new DeviceParaReseñasDTO(m.id, m.Name, m.Brand, m.Color, m.Year, m.Model.NameModel))
                 .ToListAsync();
             return Ok(devices);

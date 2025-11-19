@@ -1,4 +1,6 @@
-﻿namespace AppForSEII2526.API.DTOs.DeviceDTO
+﻿using Humanizer.Localisation;
+
+namespace AppForSEII2526.API.DTOs.DeviceDTO
 {
     public class DeviceParaReseñasDTO
     {
@@ -26,7 +28,15 @@
         
         public string Model { get; set; }
 
-
+        public override bool Equals(object? obj) {
+            return obj is DeviceParaReseñasDTO dTO &&
+                   Id == dTO.Id &&
+                   Name == dTO.Name &&
+                   Brand == dTO.Brand &&
+                   Color == dTO.Color &&
+                   Year == dTO.Year &&
+                   Model == dTO.Model;
+        }
 
     }
 }
