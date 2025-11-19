@@ -120,7 +120,32 @@ namespace AppForSEII2526.UT.DeviceControler_test
             };
         }// De la lista de casos de prueba
 
+        // --- PRUEBAS ---
+        [Theory]
+        [Trait("LevelTesting", "Unit Testing")]
+        [Trait("Database", "WithoutFixture")]
+        [MemberData(nameof(TestCasesFor_GetDevicesParaPurchase))]
+        public async Task GetDevicesParaPurchase_Test(string? nombreFiltro, string? colorFiltro, List<DeviceParaCompraDTOs> expectedDevices)
+        {
+            // Arrange
+            var controller = new DeviceController(_context, _logger);
 
+            // Act
+            var result = await controller.GetDevicesParaPurchase(nombreFiltro, colorFiltro);
+
+            // Assert
+            // 1. Verificar que es OkObjectResult (200 OK)
+            var okResult = Assert.IsType<OkObjectResult>(result);
+
+            // 2. Verificar que devuelve una lista de DTOs
+            var actualDevices = Assert.IsType<List<DeviceParaCompraDTOs>>(okResult.Value);
+
+            // 3. Verificar que la lista obtenida es igual a la esperada
+            // (Esto funciona gracias al Equals que añadimos al DTO)
+            //Assert.Equal(expectedDevices.Count, actualDevices.Count); // Opcional: Verificar conteo primero
+            Assert.Equal(expectedDevices, actualDevices);
+
+        }//De la prueba
 
     }//De la clase
 
