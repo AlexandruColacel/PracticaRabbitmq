@@ -39,12 +39,18 @@
 
             //ultimo, comparar los campos
             return id.Equals(dto.id) &&
-                   Name.Equals(dto.Name) &&
-                   Brand.Equals(dto.Brand) &&
-                   Model.Equals(dto.Model) &&
-                   Color.Equals(dto.Color) &&
+                   object.Equals(Name, dto.Name) &&
+                   object.Equals(Brand, dto.Brand) &&
+                   object.Equals(Model, dto.Model) &&
+                   object.Equals(Color, dto.Color) &&
                    PriceForPurchase.Equals(dto.PriceForPurchase);
 
         }//Override de Equals
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(id, Name, Brand, Model, Color, PriceForPurchase);
+        }
+
     }//De clas DeviceDTOs
 }//De namespace
