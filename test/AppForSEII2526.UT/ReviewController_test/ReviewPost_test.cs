@@ -52,21 +52,21 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
 
 
-            var testReview = new Review {
-                CustomerId = testUser.UserName,
-                ReviewTitle = _ReviewTitle,
-                CustomerCountry = 1,
-                DateOfReview = DateTime.Now,
-                ReviewItems = new List<ReviewItem> {
-                    new ReviewItem {
-                        Device = testDevice,
-                        Rating = 5,
-                        Comments = "Loved it!"
-                    }
-                },
-                ReviewId = 100,
-                ApplicationUser = testUser
-            };
+            //var testReview = new Review {
+            //    CustomerId = testUser.UserName,
+            //    ReviewTitle = _ReviewTitle,
+            //    CustomerCountry = 1,
+            //    DateOfReview = DateTime.Now,
+            //    ReviewItems = new List<ReviewItem> {
+            //        new ReviewItem {
+            //            Device = testDevice,
+            //            Rating = 5,
+            //            Comments = "Loved it!"
+            //        }
+            //    },
+            //    ReviewId = 100,
+            //    ApplicationUser = testUser
+            //};
 
 
 
@@ -75,7 +75,7 @@ namespace AppForSEII2526.UT.ReviewController_test {
             _context.Add(testUser);
             _context.Add(testModel);
             _context.Add(testDevice);
-            _context.Add(testReview);
+            //_context.Add(testReview);
             _context.SaveChanges();
 
 
@@ -97,11 +97,11 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
             var allTests = new List<object[]> {
                 // validar que haya al menos un reviewitem
-                new object[] { reviewNoITem, "Debe haber al menos un elemento en la reseña" },
+                new object[] { reviewNoITem, "Error! You must include at least one device to be reviewed" },
                 // validar usuario
-                new object[] { reviewInvalidUser, "El usuario no existe" },
+                new object[] { reviewInvalidUser, "Error! UserName is not registered" },
                 // Validar pais
-                new object[] { reviewInvalidCountry, "El país no es válido" }
+                new object[] { reviewInvalidCountry, "Error! The country is not valid. Allowed values are: 1 (Spain), 5 (France), 10 (Germany), 20 (Italy)" }
 
             };
 
@@ -145,25 +145,27 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
             var controller = new ReviewController(_context, logger);
 
-
+           
             //DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems
             var reviewDTO = new ReviewForCreateDTO(DateTime.Now, _ReviewTitle, _userName, 1, new List<ReviewItemDTO>()
-                { new ReviewItemDTO( _Device1Title, _Device1Model,2023,5,"Excellent device") }
+                { new ReviewItemDTO(20, _Device1Model, _Device1Model,2023,5,"Excellent device") }
                 );
 
 
-            //nt id, DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems
-            var expectedreviewDetailDTO = new ReviewDetailDTO(2, DateTime.Now,_ReviewTitle, _userName, 1, new List<ReviewItemDTO>()
-                { new ReviewItemDTO( _Device1Title, _Device1Model,2023,5,"Excellent device") }
+            //int id, DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems
+            var expectedreviewDetailDTO = new ReviewDetailDTO(1, DateTime.Now,_ReviewTitle, _userName, 1, new List<ReviewItemDTO>()
+                { new ReviewItemDTO( 20, _Device1Model, _Device1Model,2023,5,"Excellent device") }
                 );
 
             // Act
             var result = await controller.CreateReview(reviewDTO);
 
+            
             //Assert
             //we check that the response type is BadRequest and obtain the error returned
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             var actualReviewDetailDTO = Assert.IsType<ReviewDetailDTO>(createdResult.Value);
+            var eq = expectedreviewDetailDTO.Equals(actualReviewDetailDTO);
 
             Assert.Equal(expectedreviewDetailDTO, actualReviewDetailDTO);
 
