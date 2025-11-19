@@ -14,7 +14,7 @@ namespace AppForSEII2526.API.Models
             ReviewTitle = reviewTitle;
             CustomerCountry = customerCountry;
             DateOfReview = dateOfReview;
-            OverallRating = ReviewItems.Sum(ri => ri.Rating * ReviewItems.Count); ;
+            if (ReviewItems.Count == 0) { OverallRating = 0; } else OverallRating = ReviewItems.Sum(ri => ri.Rating / ReviewItems.Count); ;
             ReviewItems = reviewItems;
             ReviewId = reviewId;
             ApplicationUser = user;
