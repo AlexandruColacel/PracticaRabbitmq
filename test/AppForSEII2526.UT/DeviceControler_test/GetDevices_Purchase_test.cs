@@ -11,13 +11,13 @@ using Xunit;
 
 namespace AppForSEII2526.UT.DeviceControler_test
 {
-    public class GetDevices_test : AppForSEII25264SqliteUT
+    public class GetDevices_Purchase_test : AppForSEII25264SqliteUT
     {
         private readonly ILogger<DeviceController> _logger;
 
         //Vamos a "sembrar" datos en la base de datos en memoria
         //Para eso, usamos el constructor de la clase de test
-        public GetDevices_test()
+        public GetDevices_Purchase_test()
         {
             _logger = new Mock<ILogger<DeviceController>>().Object;
 

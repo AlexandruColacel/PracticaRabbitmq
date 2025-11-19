@@ -1,0 +1,24 @@
+USE [aspnet-AppForSEII2526.Web-660902f3-55b0-42b4-a4c6-7893d47fb56a];
+GO
+SET IDENTITY_INSERT [dbo].[Model] ON
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (1, N'Samsung')
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (2, N'Apple')
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (3, N'Xiaomi')
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (4, N'Huawei')
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (5, N'Sony')
+INSERT INTO [dbo].[Model] ([Id], [NameModel]) VALUES (6, N'Fake Apple')
+SET IDENTITY_INSERT [dbo].[Model] OFF
+
+SET IDENTITY_INSERT [dbo].[Device] ON
+INSERT INTO [dbo].[Device] ([id], [Color], [Brand], [Name], [PriceForRent], [PriceForPurchase], [Quality], [Year], [QuantityForPurchase], [QuantityForRent], [ModelId], [Description]) VALUES (1, N'Negro', N'Samsung', N'Galaxy S10', 15, 199, 2, 2019, 5, 3, 1, N'Smartphone clásico, buen rendimiento para su año.')
+INSERT INTO [dbo].[Device] ([id], [Color], [Brand], [Name], [PriceForRent], [PriceForPurchase], [Quality], [Year], [QuantityForPurchase], [QuantityForRent], [ModelId], [Description]) VALUES (2, N'Blanco', N'Apple', N'iPhone 11', 20, 229, 1, 2019, 4, 2, 2, N'iPhone en muy buen estado, batería OK.')
+INSERT INTO [dbo].[Device] ([id], [Color], [Brand], [Name], [PriceForRent], [PriceForPurchase], [Quality], [Year], [QuantityForPurchase], [QuantityForRent], [ModelId], [Description]) VALUES (7, N'Azul', N'Xiaomi', N'Redmi Note 9', 7, 89, 3, 2020, 5, 3, 3, N'Económico, buena relación calidad/precio.')
+INSERT INTO [dbo].[Device] ([id], [Color], [Brand], [Name], [PriceForRent], [PriceForPurchase], [Quality], [Year], [QuantityForPurchase], [QuantityForRent], [ModelId], [Description]) VALUES (11, N'Gris', N'Huawei', N'P30 Lite', 9, 120, 2, 2018, 3, 5, 4, N'Modelo utilizado para pruebas, con funda incluida.')
+INSERT INTO [dbo].[Device] ([id], [Color], [Brand], [Name], [PriceForRent], [PriceForPurchase], [Quality], [Year], [QuantityForPurchase], [QuantityForRent], [ModelId], [Description]) VALUES (12, N'Rojo', N'Sony', N'Xperia Z5 Compact', 6, 60, 5, 2016, 1, 1, 5, N'Pequeño y robusto, batería con desgaste moderado.')
+SET IDENTITY_INSERT [dbo].[Device] OFF
+
+INSERT INTO [dbo].[AspNetUsers] ([Id], [Name], [Surname], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) VALUES (N'1', N'juan', N'lopez', N'juanKILLA', N'juanKILLA', N'juanXkilla@gmail.com', N'juanXkilla@gmail.com', 1, N'1234', N'1234', N'1234', N'1234', 1, 1, N'12/12/2025 0:00:00 +01:00', 1, 0)
+INSERT INTO [dbo].[AspNetUsers] ([Id], [Name], [Surname], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) VALUES (N'2', N'Paco', N'Nuñez', N'PacoSinger', N'PacoSinger', N'pacoSinger@gmail.com', N'pacoSinger@gmail.com', 1, N'2345', N'2345', N'2345', N'2345', 1, 1, N'23/11/2025 0:00:00 +01:00', 1, 0)
+INSERT INTO [dbo].[AspNetUsers] ([Id], [Name], [Surname], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) VALUES (N'3', N'Laura', N'Jimenez', N'LauraWita', N'LauraWita', N'Laura@gmail.com', N'Laura@gmail.com', 1, N'4567', N'4567', N'4567', N'4567', 1, 1, N'03/02/2019 0:00:00 +01:00', 1, 0)
+INSERT INTO [dbo].[AspNetUsers] ([Id], [Name], [Surname], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) VALUES (N'4', N'Marcos', N'Gonzalez', N'MarcosGamerXXX', N'MArcosGamerXXX', N'MarcosGAMER@gmail.com', N'MarcosGAMER@gmail.com', 1, N'5678', N'5678', N'5678', N'5678', 1, 1, N'09/12/2020 0:00:00 +01:00', 0, 1)
+INSERT INTO [dbo].[AspNetUsers] ([Id], [Name], [Surname], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) VALUES (N'5', N'Aitor', N'Herrero', N'AitorPedos', N'AitorPedos', N'AitorAitor@gmail.com', N'AitorAitor@gmail.com', 1, N'1456', N'1456', N'1456', N'1456', 1, 1, N'17/07/2021 0:00:00 +02:00', 1, 2)
