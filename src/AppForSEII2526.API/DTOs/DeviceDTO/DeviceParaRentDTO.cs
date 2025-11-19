@@ -24,7 +24,23 @@ namespace AppForSEII2526.API.DTOs.DeviceDTO
 
         public double RentPrice { get; set; }
 
-    
-          
+        //equals
+        public override bool Equals(object? obj) {
+            return obj is DeviceParaRentDTO dTO &&
+                   Id == dTO.Id &&
+                   Name == dTO.Name &&
+                   Model == dTO.Model &&
+                   Brand == dTO.Brand &&
+                   Year == dTO.Year &&
+                   Color == dTO.Color &&
+                   RentPrice == dTO.RentPrice;
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(Id, Name, Model, Brand, Year, Color, RentPrice);
+        }
+
+
+
     }
 }
