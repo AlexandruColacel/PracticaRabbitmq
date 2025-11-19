@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AppForSEII2526.API.DTOs.DeviceDTO;
+using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using AppForSEII2526.API.DTOs.DeviceDTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 
 namespace AppForSEII2526.API.Controllers
@@ -56,6 +58,17 @@ namespace AppForSEII2526.API.Controllers
         [ProducesResponseType(typeof(IList<DeviceParaCompraDTOs>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult> GetDevicesParaPurchase(string? nombreFILTRO, string? colorFILTRO)
         {
+            // ---VALIDACIÓN AÑADIDA PARA PROVOCAR BAD REQUEST DENTRO DE PREUBAS UNITARIAS---
+
+            // Regla: Si buscas por nombre, este debe tener al menos 3 caracteres (para evitar búsquedas como "a")
+            if (!string.IsNullOrEmpty(nombreFILTRO) && nombreFILTRO.Length < 3)
+            {
+                ModelState.AddModelError("nombreFILTRO", "The name filter must have at least 3 characters.");
+                return BadRequest(new ValidationProblemDetails(ModelState));
+            }
+
+            // ---------------------------------------------------
+
             var devices = await _context.Device
                 //2.1 El sistema ofrece al cliente la alternativa de filtrar los dispositivos según su nombre y/o color.
                 .Where(d => (nombreFILTRO == null || d.Name.Contains(nombreFILTRO)) &&
