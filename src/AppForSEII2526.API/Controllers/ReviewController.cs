@@ -74,9 +74,10 @@ namespace AppForSEII2526.API.Controllers
         public async Task<ActionResult> CreateReview(ReviewForCreateDTO reviewForCreate)
         {
 
-            // any validation defined in ReviewForCreate is checked before running the method so they don't have to be checked again
+            // validar que haya al menos un reviewitem
             if (reviewForCreate.ReviewItems.Count == 0)
                 ModelState.AddModelError("ReviewItems", "Error! You must include at least one device to be reviewed");
+            // validar usuario
             var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == reviewForCreate.CustomerId);
             if (user == null)
                 ModelState.AddModelError("RentalApplicationUser", "Error! UserName is not registered");
