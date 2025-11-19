@@ -11,6 +11,8 @@ namespace AppForSEII2526.UT.RentalController_test {
     public class GetRental_test : AppForSEII25264SqliteUT {
         public GetRental_test() {
             //ARRANGE START
+            // ARRANGE START
+            // Necesito crear toda la jerarquía: Modelo -> Dispositivo -> Usuario -> Alquiler -> DetalleAlquiler
             var models = new List<Model>() {
                 new Model("Iphone-3x"),
                 new Model("Google-4y"),
@@ -28,7 +30,7 @@ namespace AppForSEII2526.UT.RentalController_test {
                     quantityForPurchase: 5,
                     quantityForRent: 10,
                     reviewItems: new List<ReviewItem>(),
-                    model: models[0],
+                    model: models[0],// Dispositivo enlazado al modelo 0
                     description: "Latest iPhone model with advanced features",
                     purchaseItems: new List<PurchaseItem>(),
                     deviceItems: new List<RentDevice>()
@@ -94,6 +96,7 @@ namespace AppForSEII2526.UT.RentalController_test {
         [Fact]
         [Trait("Database", "WithoutFixture")]
         [Trait("LevelTesting", "Unit Testing")]
+        // 2. TEST DE NO ENCONTRADO (404)
         public async Task GetRental_NotFound_test() {
             // Arrange
             var mock = new Mock<ILogger<RentalController>>();
@@ -118,12 +121,13 @@ namespace AppForSEII2526.UT.RentalController_test {
             ILogger<RentalController> logger = mock.Object;
             var controller = new RentalController(_context, logger);
 
-
+            // CREO EL DTO QUE ESPERO RECIBIR "A MANO".
+            // Tengo que replicar exactamente los datos que metí en el constructor.
             var expectedRental = new RentalDetailsDTO(
-                     id: 1,
-                     rentalDate: DateTime.Now,
+                     id: 1, // Sé que es 1 porque es el primero que inserté
+                     rentalDate: DateTime.Now, // (El Equals tiene margen de tolerancia para fechas)
                      customerUserName: "LexG@uclm.es",
-                     customerNameSurname: "Lex G",
+                     customerNameSurname: "Lex G", // Ojo: Aquí concateno Nombre + Apellido como hace el controller
                      deliveryAddress: "Avda. España s/n, Albacete 02071",
                      paymentMethod: PaymentMethodTypes.Tarjeta,
                      rentalDateFrom: DateTime.Today.AddDays(2),
@@ -132,7 +136,7 @@ namespace AppForSEII2526.UT.RentalController_test {
                      {
                         new RentalItemDTO(
                             id: 1,
-                            model: "Iphone-3x",
+                            model: "Iphone-3x", // Compruebo que me trae el nombre del modelo
                             brand: "Apple",
                             rentPrice: 50.0,
                             quantity: 1
@@ -141,6 +145,7 @@ namespace AppForSEII2526.UT.RentalController_test {
                      totalPrice: 150.0 // 50.0 * 1 * 3 días
                  );
             // Act 
+            // Act: Pido el alquiler ID 1
             var result = await controller.GetRental(1);
 
             //Assert
@@ -149,6 +154,8 @@ namespace AppForSEII2526.UT.RentalController_test {
             var rentalDTOActual = Assert.IsType<RentalDetailsDTO>(okResult.Value);
             var eq = expectedRental.Equals(rentalDTOActual);
             //we check that the expected and actual are the same
+            // Verifico que el objeto recibido es igual al esperado.
+            // Esto funciona gracias al método Equals() en RentalDetailsDTO y RentalItemDTO.
             Assert.Equal(expectedRental, rentalDTOActual);
 
         }
