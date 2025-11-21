@@ -105,6 +105,7 @@ namespace AppForSEII2526.API.Controllers
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
+
             // --- 2. Obtener y Validar Dispositivos y Stock (lógica adaptada) ---
             var deviceIds = purchaseForCreate.PurchaseItems.Select(pi => pi.Id).Distinct().ToList();
             var devices = await _context.Device
@@ -131,6 +132,13 @@ namespace AppForSEII2526.API.Controllers
                 if (device.QuantityForPurchase < itemDto.Quantity)
                 {
                     ModelState.AddModelError("PurchaseItems", $"Not enough stock for device '{device.Brand} {device.Model?.NameModel}'. Available: {device.QuantityForPurchase}, requested: {itemDto.Quantity}.");
+                }
+
+                //EXAMEN: validación de que brand, no tenga "Xiaomi" o "Huawei"
+                if(device.Brand.Contains("Huawei") || device.Brand.Contains("Xiaomi"))
+                {
+                    //return BadRequest("Error: las tecnologías de la marca Xiaomi y/o Huawei ya no estan disponibles, siguiendo recomendacions de las autoridades competentes en materia de seguridad");
+                    ModelState.AddModelError("PurchaseItems", $"Invalid brand '{device.Brand}'.");
                 }
             }
 

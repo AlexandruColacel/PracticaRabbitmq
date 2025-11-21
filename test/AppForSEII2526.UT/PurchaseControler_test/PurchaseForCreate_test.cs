@@ -22,6 +22,8 @@ namespace AppForSEII2526.UT.PurchaseControler_test
         private const string _deliveryAddress = "123 Tech Street, Albacete";
         private const int _device1Id = 20;
         private const int _device2Id = 21; // Dispositivo sin stock o para otra prueba
+        private const int _device3Id = 22; //Device modelo invalido 1
+        private const int _device4Id = 23; //Device modelo invalido 2
 
         public PurchaseForCreate_test()
         {
@@ -41,6 +43,21 @@ namespace AppForSEII2526.UT.PurchaseControler_test
             {
                 Id = 30,
                 NameModel = "SuperModelo"
+            };
+
+            //MODIFICACIONES DE EXAMEN SPRINT 2
+            var modelInvalido1 = new Model
+            {
+                //Xiaomi o Huawei no me sirven
+                Id = 81,
+                NameModel = "Huawei"
+            };
+
+            //MODIFICACIONES DE EXAMEN SPRINT 2
+            var modelInvalido2 = new Model
+            {
+                Id = 82,
+                NameModel = "Xiaomi"
             };
 
             // Dispositivo con stock suficiente
@@ -69,11 +86,39 @@ namespace AppForSEII2526.UT.PurchaseControler_test
                 Description = "An old device."
             };
 
+            // Dispositivo con modelo invalido 1 (EXAMEN)
+            var deviceModelInvalido1 = new Device
+            {
+                id = _device3Id,
+                Name = "Xiaomi Phone",
+                Brand = "Xiaomi",
+                Model = modelInvalido1,
+                Color = "White",
+                PriceForPurchase = 199.99,
+                QuantityForPurchase = 5,
+                Description = "XiaomiDevice."
+            };
+
+            // Dispositivo con modelo invalido 2 (EXAMEN)
+            var deviceModelInvalido2 = new Device
+            {
+                id = _device4Id,
+                Name = "Huawei Phone",
+                Brand = "Huawei",
+                Model = modelInvalido2,
+                Color = "White",
+                PriceForPurchase = 199.99,
+                QuantityForPurchase = 5,
+                Description = "HuaweiDevice."
+            };
+
             // Añadir al contexto
             _context.Add(user);
             _context.Add(model);
             _context.Add(device1);
             _context.Add(deviceNoStock);
+            _context.Add(deviceModelInvalido1);
+            _context.Add(deviceModelInvalido2);
             _context.SaveChanges();
         }// Del constructor
 
@@ -112,6 +157,19 @@ namespace AppForSEII2526.UT.PurchaseControler_test
                 new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device2Id, Quantity = 1 } } // device2 tiene stock 0
             );
 
+            //Modelo invalido 1
+            var purchaseInvalidModel1 = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device3Id, Quantity = 1, Brand = "Xiaomi" } } 
+            );
+
+            //Modelo invalido 2
+
+            var purchaseInvalidModel2 = new PurchaseForCreateDTO(
+                _userName, _userSurname, _deliveryAddress, PaymentMethod.TarjetaCredito,
+                new List<PurchaseItemDTO> { new PurchaseItemDTO { Id = _device4Id, Quantity = 1, Brand = "Huawei" } } 
+            );
+
             // Retornamos: [DTO de entrada, Mensaje de error esperado (o parte de él)]
             return new List<object[]>
             {
@@ -119,7 +177,9 @@ namespace AppForSEII2526.UT.PurchaseControler_test
                 new object[] { purchaseUserNotRegistered, "UserName is not registered." },
                 new object[] { purchaseDeviceNotExist, "Device with id 999 does not exist." },
                 new object[] { purchaseQuantityZero, "Quantity for device TechBrand SuperModelo must be greater than 0." }, // Asumiendo que el mensaje incluye marca/modelo
-                new object[] { purchaseOutOfStock, "Not enough stock for device 'OldBrand SuperModelo'" }
+                new object[] { purchaseOutOfStock, "Not enough stock for device 'OldBrand SuperModelo'" },
+                new object[] { purchaseInvalidModel1, "Invalid brand 'Xiaomi'."}, //(EXAMEN)
+                new object[] { purchaseInvalidModel2, "Invalid brand 'Huawei'." }  //(EXAMEN)
             };
 
         }//De la lista de casos de prueba
