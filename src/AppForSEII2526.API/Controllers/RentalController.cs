@@ -67,6 +67,16 @@ namespace AppForSEII2526.API.Controllers
             if (user == null)
                 ModelState.AddModelError("CustomerUserName", "Error! UserName is not registered");
 
+            //VER SI LA DIRECCION ES NULA
+            //var direccion = await _context.Rental.FirstOrDefaultAsync(dr => dr.DeliveryAddress == rentalForCreate.DeliveryAddress);
+            //if (direccion == null)
+                //ModelState.AddModelError("DeliveryAddress", "Error en la direccion de envio.Por favor, introduce una direccion valida incluyendo las palabras Calle o Carretera");
+
+            //ver si contiene carretera o calle la direccion
+            if(!rentalForCreate.DeliveryAddress.Contains("Calle") && !rentalForCreate.DeliveryAddress.Contains("Carretera"))
+                ModelState.AddModelError("DeliveryAddress", "Error en la direccion de envio.Por favor, introduce una direccion valida incluyendo las palabras Calle o Carretera");
+
+
             // Si he encontrado algún error hasta ahora (fechas mal, usuario fake...), paro aquí y devuelvo error 400.
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
@@ -93,6 +103,7 @@ namespace AppForSEII2526.API.Controllers
                     d.Brand,
                     d.QuantityForRent,// Cuántos tengo en total en el almacén para alquilar.
                     d.PriceForRent,
+           
                     // AQUÍ LA MAGIA: Cuento cuántos de estos dispositivos están ocupados
                     // en el mismo rango de fechas que pide el cliente.
                     // Si un alquiler empieza antes de que termine el mío Y termina después de que empiece el mío, se solapan.
@@ -176,6 +187,7 @@ namespace AppForSEII2526.API.Controllers
                     item.Brand = device.Brand;
                 }
             }
+           
 
             // Calculo el precio total sumando: PrecioUnitario * Cantidad * Días.
             rental.TotalPrice = rental.RentDevices.Sum(rd => rd.Price * rd.Quantity * numDays);

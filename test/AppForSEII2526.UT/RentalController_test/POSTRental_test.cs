@@ -15,7 +15,8 @@ namespace AppForSEII2526.UT.RentalController_test {
         // Constantes para usar en los casos de prueba estáticos
         private const string _userName = "LexG@uclm.es";
         private const string _customerNameSurname = "Lex G";
-        private const string _deliveryAddress = "Avda. España s/n, Albacete 02071";
+        private const string _deliveryAddressbad = "Avda. España s/n, Albacete 02071";
+        private const string _deliveryAddress = "Calle España s/n, Albacete 02071";
 
         private const string _model1Brand = "iphone";
         private const string _model1Model = "Iphone-3x";
@@ -144,6 +145,16 @@ namespace AppForSEII2526.UT.RentalController_test {
                 new List<RentalItemDTO>() {
                     new RentalItemDTO(_device1Id, _model1Model, _model1Brand, 50.0, 20) // 20 > 10 disponibles
                 });
+            //Objeto con mala direccion de envio(No comienza por carretra)
+            var rentalBadDeliveryAddres = new RentalPostDTO(
+                _userName,
+                _customerNameSurname,
+                _deliveryAddressbad, //En este caso utilizo esta porque me sirve ya que arriba tengo declado que es "Avenida de españa... por lo cual no es correcta"
+                PaymentMethodTypes.Tarjeta,
+                DateTime.Today.AddDays(2),
+                DateTime.Today.AddDays(7),
+                rentalItems //USO ESTE YA QUE NO NECESITO UN DISPOSITIVO INCORRECTO EN ESTE CASO YA QUE CONTROLO QUE LA DIRECCION NO SEA NULL
+                );
 
             // IMPORTANTE: Los mensajes de error deben ser IDÉNTICOS a los de RentalController.cs
             var allTests = new List<object[]>
@@ -153,7 +164,9 @@ namespace AppForSEII2526.UT.RentalController_test {
                 new object[] { rentalToBeforeFrom, "Error! Your rental must end later than it starts", },
                 new object[] { RentalApplicationUser, "Error! UserName is not registered", },
                 // Mensaje dinámico basado en tu controlador: $"Error! Device '{brand} {model}' only has..."
-                new object[] { rentalDeviceNotAvailable, $"Error! Device '{_model1Brand} {_model1Model}' only has 9 units available" }, 
+                new object[] { rentalDeviceNotAvailable, $"Error! Device '{_model1Brand} {_model1Model}' only has 9 units available" },
+                //new object[] {rentalBadNullDeliveryAddres, "Error en la direccion de envio.Por favor, introduce una direccion valida incluyendo las palabras Calle o Carretera" },
+                new object[] {rentalBadDeliveryAddres, "Error en la direccion de envio.Por favor, introduce una direccion valida incluyendo las palabras Calle o Carretera" }
                 // Nota: Dice "9 units" porque en el setup() ya alquilamos 1 unidad del device 1.
                 // QuantityForRent(10) - NumberOfRentedDevices(1) = 9 disponibles.
             };
