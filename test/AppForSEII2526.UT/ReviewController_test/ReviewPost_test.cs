@@ -16,8 +16,8 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
         private const string _Device1Title = "Device M";
         private const string _Device1Model = "Motorola GG";
-        private const string _Device2Title = "The man in the high castle";
-        private const string _Device2Model = "Drama";
+        private const string _Device2Title = "Device examen";
+        private const string _Device2Model = "ModelExamen";
         private const string _ReviewTitle = "Great Product";
 
         private readonly ILogger<ReviewController> _logger;
@@ -38,6 +38,12 @@ namespace AppForSEII2526.UT.ReviewController_test {
                 NameModel = _Device1Model
             };
 
+            var testModel2 = new Model
+            {
+                Id = 33,
+                NameModel = _Device2Model
+            };
+
             var testDevice = new Device {
                 id = 20,
                 Name = _Device1Title,
@@ -50,6 +56,18 @@ namespace AppForSEII2526.UT.ReviewController_test {
                 Year = 2023
             };
 
+            var testDevice2 = new Device
+            {
+                id = 22,
+                Name = _Device2Title,
+                Brand = "TechBrand",
+                Model = testModel2,
+                Color = "Black",
+                PriceForPurchase = 499.99,
+                QuantityForPurchase = 5,
+                Description = "A high-end tech device.",
+                Year = 2024
+            };
 
 
             //var testReview = new Review {
@@ -74,7 +92,9 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
             _context.Add(testUser);
             _context.Add(testModel);
+            _context.Add(testModel2);
             _context.Add(testDevice);
+            _context.Add(testDevice2);
             //_context.Add(testReview);
             _context.SaveChanges();
 
@@ -86,7 +106,11 @@ namespace AppForSEII2526.UT.ReviewController_test {
         public static IEnumerable<object[]> TestCasesFor_CreateReview() {
 
             var reviewItems = new List<ReviewItemDTO> {
-                new ReviewItemDTO( _Device1Title, _Device1Model,2023,5,"Excellent device"),
+                new ReviewItemDTO( _Device1Title, _Device1Model,2023,5,"Reseña para Excellent device"),
+            };
+            //examen
+            var reviewItemsNoValidComments = new List<ReviewItemDTO> {
+                new ReviewItemDTO( _Device2Title, _Device2Model,2024,4,"Excellent device"),
             };
 
             var reviewNoITem = new ReviewForCreateDTO(DateTime.Now, _ReviewTitle, _userName,1, new List<ReviewItemDTO>());
@@ -95,14 +119,17 @@ namespace AppForSEII2526.UT.ReviewController_test {
 
             var reviewInvalidCountry = new ReviewForCreateDTO(DateTime.Now, _ReviewTitle, _userName,99,reviewItems);
 
+            var reviewInvalidComment = new ReviewForCreateDTO(DateTime.Now, _ReviewTitle, _userName, 1, reviewItemsNoValidComments);
+
             var allTests = new List<object[]> {
                 // validar que haya al menos un reviewitem
                 new object[] { reviewNoITem, "Error! You must include at least one device to be reviewed" },
                 // validar usuario
                 new object[] { reviewInvalidUser, "Error! UserName is not registered" },
                 // Validar pais
-                new object[] { reviewInvalidCountry, "Error! The country is not valid. Allowed values are: 1 (Spain), 5 (France), 10 (Germany), 20 (Italy)" }
-
+                new object[] { reviewInvalidCountry, "Error! The country is not valid. Allowed values are: 1 (Spain), 5 (France), 10 (Germany), 20 (Italy)" },
+                //examen
+                new object[] { reviewInvalidComment, "Error! el comentario de la reseña debe empezar por Reseña para" }
             };
 
             return allTests;
@@ -148,13 +175,13 @@ namespace AppForSEII2526.UT.ReviewController_test {
            
             //DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems
             var reviewDTO = new ReviewForCreateDTO(DateTime.Now, _ReviewTitle, _userName, 1, new List<ReviewItemDTO>()
-                { new ReviewItemDTO(20, _Device1Model, _Device1Model,2023,5,"Excellent device") }
+                { new ReviewItemDTO(20, _Device1Model, _Device1Model,2023,5,"Reseña para exce") }
                 );
 
 
             //int id, DateTime dateOfReview, string reviewTitle, string nombreCliente, int paisCliente, IList<ReviewItemDTO> reviewItems
             var expectedreviewDetailDTO = new ReviewDetailDTO(1, DateTime.Now,_ReviewTitle, _userName, 1, new List<ReviewItemDTO>()
-                { new ReviewItemDTO( 20, _Device1Model, _Device1Model,2023,5,"Excellent device") }
+                { new ReviewItemDTO( 20, _Device1Model, _Device1Model,2023,5,"Reseña para exce")}
                 );
 
             // Act
