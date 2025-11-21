@@ -84,6 +84,22 @@ namespace AppForSEII2526.API.Controllers
             // Validar pais
             if (!ValoresPermitidos.Contains(reviewForCreate.CustomerCountry))
                 ModelState.AddModelError("CustomerCountry", "Error! The country is not valid. Allowed values are: 1 (Spain), 5 (France), 10 (Germany), 20 (Italy)");
+            
+            // Examen
+            foreach (var item in reviewForCreate.ReviewItems)
+            {
+                var comentario = item.Comments;
+                
+                if (comentario == null || !comentario.StartsWith("Reseña para"))
+                {
+                    ModelState.AddModelError("ReviewItems", $"Error! el comentario de la reseña debe empezar por Reseña para");
+                }
+            }
+            
+
+
+
+
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
