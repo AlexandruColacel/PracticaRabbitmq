@@ -18,8 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppForSEII2526.UT", "test\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppForSEII2526.UIT", "test\AppForSEII2526.UIT\AppForSEII2526.UIT.csproj", "{8786EB0A-81B1-4ED2-A1FA-70CFAEEE7F88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppForSEII2526.Maui", "src\AppForSEII2526.Maui\AppForSEII2526.Maui.csproj", "{9A8C18DB-2D24-48C7-9EEF-9ABFFEC2A58C}"
-EndProject
+# Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppForSEII2526.Maui", "src\AppForSEII2526.Maui\AppForSEII2526.Maui.csproj", "{9A8C18DB-2D24-48C7-9EEF-9ABFFEC2A58C}"
+# EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
