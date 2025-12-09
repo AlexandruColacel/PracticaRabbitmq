@@ -23,5 +23,34 @@
 
         public double PriceForPurchase { get; set; }
 
+        public override bool Equals(object? obj)
+        {
+            //Primero, saber si trabajamos con la misma clase
+            if (obj is not DeviceParaCompraDTOs dto)
+            {
+                return false;
+            }
+
+            //Segundo, comprobar si es la misma instancia (optimización rápida)
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            //ultimo, comparar los campos
+            return id.Equals(dto.id) &&
+                   object.Equals(Name, dto.Name) &&
+                   object.Equals(Brand, dto.Brand) &&
+                   object.Equals(Model, dto.Model) &&
+                   object.Equals(Color, dto.Color) &&
+                   PriceForPurchase.Equals(dto.PriceForPurchase);
+
+        }//Override de Equals
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(id, Name, Brand, Model, Color, PriceForPurchase);
+        }
+
     }//De clas DeviceDTOs
 }//De namespace

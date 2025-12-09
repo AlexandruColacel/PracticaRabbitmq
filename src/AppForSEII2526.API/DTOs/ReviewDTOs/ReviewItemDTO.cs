@@ -1,9 +1,21 @@
 ﻿using Humanizer.Localisation;
 
-namespace AppForSEII2526.API.DTOs.RentalDTOs
+namespace AppForSEII2526.API.DTOs.ReviewDTOs
 {
     public class ReviewItemDTO
     {
+        public ReviewItemDTO()
+        {
+        }
+        public ReviewItemDTO( string deviceName, string modelName, int deviceYear, int rating, string comments)
+       {
+            DeviceName = deviceName;
+            ModelName = modelName;
+            DeviceYear = deviceYear;
+            Rating = rating;
+            Comments = comments;
+
+        }
         public ReviewItemDTO(int deviceId, string deviceName,  string modelName, int deviceYear,int rating, string comments)//puntuación y comentario
         {
             DeviceId = deviceId;

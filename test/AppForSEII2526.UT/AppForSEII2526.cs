@@ -1,4 +1,4 @@
-﻿namespace AppForSEII2526.UT {
+﻿namespace AppForSEII2526.UT { //Namespace explicado dentro de seminario
     public class AppForSEII25264SqliteUT {
         protected readonly DbConnection _connection;
         protected readonly ApplicationDbContext _context;
@@ -31,6 +31,6 @@
                 FROM Movies;";
                 viewCommand.ExecuteNonQuery();
             }
-        }
+        }//De public appForSEEII25264SqLiteUT
     }
 }

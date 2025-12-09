@@ -1,6 +1,6 @@
 ﻿namespace AppForSEII2526.API.DTOs.RentalDTOs
 {
-    public class RentalDetailsDTO
+    public class RentalDetailsDTO : RentalPostDTO
     {
         // Constructor vacío para serialización
         public RentalDetailsDTO()
@@ -63,5 +63,18 @@
         // Lista de dispositivos alquilados (modelo, precio, cantidad)
         [Display(Name = "Dispositivos Alquilados")]
         public IList<RentalItemDTO> RentalItems { get; set; }
+
+
+        public override bool Equals(object? obj) {
+            return obj is RentalDetailsDTO dTO &&
+                   base.Equals(obj) &&
+                   TotalPrice == dTO.TotalPrice &&
+                   Id == dTO.Id &&
+                   CompareDate(RentalDate, dTO.RentalDate);
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(base.GetHashCode(), Id, RentalDate);
+        }
     }
 }

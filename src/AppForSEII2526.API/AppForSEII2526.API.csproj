@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs\RentalDTO\**" />
+    <Compile Remove="DTOs\ReviewDTO\**" />
+    <Content Remove="DTOs\RentalDTO\**" />
+    <Content Remove="DTOs\ReviewDTO\**" />
+    <EmbeddedResource Remove="DTOs\RentalDTO\**" />
+    <EmbeddedResource Remove="DTOs\ReviewDTO\**" />
+    <None Remove="DTOs\RentalDTO\**" />
+    <None Remove="DTOs\ReviewDTO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17" />
@@ -27,11 +38,6 @@
     </PackageReference>
     <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DTOs\RentalDTO\" />
-    <Folder Include="DTOs\ReviewDTO\" />
   </ItemGroup>
 
 </Project>
