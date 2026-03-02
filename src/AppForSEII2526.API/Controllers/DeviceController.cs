@@ -15,23 +15,21 @@ namespace AppForSEII2526.API.Controllers
     [ApiController]
     public class DeviceController : ControllerBase //Tiene todo lo que tenga controllerBase (herencia)
     {
-        // 1. HERRAMIENTAS QUE NECESITO
-        // Declaro las variables privadas donde guardaré mis herramientas de trabajo
-        // _context: Es mi "puente" a la Base de Datos. Sin esto no puedo leer ni guardar nada.
+       // 1. HERRAMIENTAS QUE NECESITO
         private readonly ApplicationDbContext _context;
         
-        // _logger: Es mi "diario de a bordo". Aquí apunto si algo sale mal para poder revisarlo luego.
+        // CORREGIDO: Solo una declaración del Logger y con el tipo correcto
         private readonly ILogger<DeviceController> _logger;
 
-        // 2. CONSTRUCTOR (INYECCIÓN DE DEPENDENCIAS)
-        // El sistema me da (inyecta) automáticamente el contexto y el logger.
-        // Yo solo tengo que guardarlos en mis variables privadas para usarlos después.
+        // 2. CONSTRUCTOR
         public DeviceController(ApplicationDbContext context, ILogger<DeviceController> logger)
         {
             _context = context;
             _logger = logger;
+            
+            // Log de inicio correcto
+            _logger.LogInformation("DeviceController initialized");
         }
-
         //Vamos a hacer un método de acción GetComputingProcess (un proceso para dividir entre 2 numeros)
         [HttpGet]
         [Route("[action]")]

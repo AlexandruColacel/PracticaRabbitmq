@@ -3,6 +3,7 @@ using System.Data.Common;
 using RabbitMQ.Client;
 using System.Text.Json;
 using AppForSEII2526.API;
+using AppForSEII2526.API.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 

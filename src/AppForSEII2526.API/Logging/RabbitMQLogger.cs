@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using AppForSEII2526.API;
 
-namespace TodoApi.Logging;
+namespace AppForSEII2526.API.Logging;
 
 public class RabbitMQLogger : ILogger, IDisposable
 {
@@ -20,8 +20,26 @@ public class RabbitMQLogger : ILogger, IDisposable
         _config = config ?? throw new ArgumentNullException(nameof(config));
         
         ValidateConfiguration(_config); 
-    }
+    
+    var factory = new ConnectionFactory
+    {
+        HostName = _config.HostName,
+        Port = _config.Port,
+        UserName = _config.UserName,
+        Password = _config.Password
+    };
+       _connection = factory.CreateConnection();
+       _channel = _connection.CreateModel();
 
+       _channel.ExchangeDeclare(
+        exchange: _config.Exchange,
+        type: _config.ExchangeType,
+        durable: _config.Durable);
+
+        _properties = _channel.CreateBasicProperties();
+        _properties.Persistent = true;
+        _properties.ContentType = "application/json"; 
+    }
     private static void ValidateConfiguration(RabbitMQLoggerConfiguration config)
     {
         if (string.IsNullOrEmpty(config.HostName))
@@ -64,12 +82,23 @@ public class RabbitMQLogger : ILogger, IDisposable
                 Message = formatter(state, exception),
                 Exception = exception?.ToString()
             };
+            var json = JsonSerializer.Serialize(logEntry);
+            var body = Encoding.UTF8.GetBytes(json);
+            
+            string routingKey = logLevel.ToString().ToLower();
+            _channel.BasicPublish(
+                exchange: _config.Exchange,
+                routingKey:  routingKey, 
+                basicProperties: _properties,
+                body: body);
+            
 
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error publishing log message to RabbitMQ: {ex.Message}");
         }
+        
     }
 
     public void Dispose()
